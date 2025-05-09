@@ -1,0 +1,369 @@
+@import './fonts.css';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import './components.css';
+@import 'tailwindcss/utilities';
+
+/* Variables CSS personalizadas */
+:root {
+    --color-verde: #4CAF50;
+    --color-azul: #00ACC1;
+    --color-dorado: #FBC02D;
+    --color-gris: #546E7A;
+    --color-blanco: #FFFFFF;
+}
+
+/* Estilos base */
+html, body {
+    @apply h-full overflow-hidden;
+}
+
+/* Layout principal */
+.app-container {
+    @apply flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900;
+}
+
+/* Estilos del sidebar */
+.sidebar {
+    @apply fixed h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-sidebar z-30 transition-all duration-300 ease-in-out;
+}
+
+.sidebar-expanded {
+    @apply w-64;
+}
+
+.sidebar-collapsed {
+    @apply w-16;
+}
+
+.sidebar-header {
+    @apply flex items-center justify-between h-16 px-4 bg-naturalbio-verde text-white;
+}
+
+.sidebar-logo {
+    @apply flex items-center overflow-hidden;
+}
+
+.sidebar-toggle {
+    @apply p-1 rounded-md hover:bg-naturalbio-verde-600 focus:outline-none;
+}
+
+.sidebar-nav {
+    @apply px-2 py-4 overflow-y-auto h-[calc(100vh-4rem)];
+}
+
+.sidebar-section {
+    @apply mb-3;
+}
+
+.sidebar-section-header {
+    @apply flex items-center justify-between px-2 py-2 text-gray-500;
+}
+
+.sidebar-link {
+    @apply flex items-center px-3 py-2 text-sm font-medium rounded-md mb-1 transition-colors;
+}
+
+.sidebar-link-active {
+    @apply bg-naturalbio-verde-50 text-naturalbio-verde border-r-4 border-naturalbio-verde;
+}
+
+.sidebar-link-inactive {
+    @apply text-gray-700 hover:bg-naturalbio-verde-50 hover:text-naturalbio-verde;
+}
+
+.sidebar-icon {
+    @apply w-5 h-5 transition-all duration-200;
+}
+
+.sidebar-text {
+    @apply ml-3 truncate transition-opacity duration-200;
+}
+
+/* Estilos del contenido principal */
+.main-content {
+    @apply flex-1 ml-0 md:ml-16 xl:ml-64 transition-all duration-300 ease-in-out overflow-hidden;
+}
+
+.main-content-collapsed {
+    @apply ml-0 md:ml-16;
+}
+
+.main-content-expanded {
+    @apply ml-0 md:ml-64;
+}
+
+/* Navbar superior */
+.top-navbar {
+    @apply bg-naturalbio-verde border-b border-naturalbio-verde-600 shadow z-20;
+}
+
+.navbar-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.navbar-content {
+    @apply flex justify-between h-16;
+}
+
+.hamburger-menu {
+    @apply flex items-center md:hidden;
+}
+
+.hamburger-button {
+    @apply text-white p-2 rounded-md hover:bg-naturalbio-verde-600 focus:outline-none;
+}
+
+.profile-dropdown {
+    @apply hidden sm:flex sm:items-center sm:ml-6;
+}
+
+/* Contenedores para contenido */
+.content-container {
+    @apply bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6;
+}
+
+.content-header {
+    @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap justify-between items-center;
+}
+
+.content-body {
+    @apply p-6;
+}
+
+/* Estilos de tablas */
+.table-wrapper {
+    @apply overflow-x-auto rounded-lg;
+}
+
+.data-table {
+    @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
+}
+
+.table-header {
+    @apply bg-gray-50 dark:bg-gray-700;
+}
+
+.table-header-cell {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider;
+}
+
+.table-body {
+    @apply bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700;
+}
+
+.table-row {
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors;
+}
+
+.table-cell {
+    @apply px-6 py-4 whitespace-nowrap text-sm;
+}
+
+/* Badges de estado */
+.badge {
+    @apply px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full;
+}
+
+.badge-active {
+    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+}
+
+.badge-inactive {
+    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+}
+
+/* Botones */
+.btn {
+    @apply px-4 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.btn-primary {
+    @apply bg-naturalbio-verde text-white hover:bg-naturalbio-verde-600 focus:ring-naturalbio-verde-400;
+}
+
+.btn-secondary {
+    @apply bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400;
+}
+
+.btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-400;
+}
+
+/* Formularios */
+.form-group {
+    @apply mb-4;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+}
+
+.form-input {
+    @apply block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-naturalbio-verde focus:ring focus:ring-naturalbio-verde focus:ring-opacity-20;
+}
+
+.form-error {
+    @apply mt-1 text-sm text-red-600 dark:text-red-400;
+}
+
+/* Estilos para scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 9999px;
+}
+
+/* Solución para el problema de diseño móvil */
+@media (max-width: 768px) {
+    .sidebar {
+        @apply transform -translate-x-full;
+    }
+    
+    .sidebar-mobile-open {
+        @apply transform translate-x-0;
+    }
+    
+    .main-content {
+        @apply ml-0;
+    }
+}
+/* Estilos generales */
+html, body {
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Mejoras de contenedor para todos los componentes */
+.container-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden;
+}
+
+.container-header {
+    @apply p-6 border-b border-gray-200 bg-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center;
+}
+
+.container-body {
+    @apply p-6;
+}
+
+.container-footer {
+    @apply p-6 border-t border-gray-200 bg-gray-50;
+}
+
+/* Estilos para tablas */
+.data-table {
+    @apply min-w-full divide-y divide-gray-200;
+}
+
+.data-table th {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50;
+}
+
+.data-table td {
+    @apply px-6 py-4 whitespace-nowrap;
+}
+
+.data-table tr {
+    @apply hover:bg-gray-50 transition-colors;
+}
+
+/* Badges de estado */
+.badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-active {
+    @apply bg-green-100 text-green-800;
+}
+
+.badge-inactive {
+    @apply bg-red-100 text-red-800;
+}
+
+/* Botones */
+.btn {
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors;
+}
+
+.btn-primary {
+    @apply text-white bg-naturalbio-verde hover:bg-naturalbio-verde-700 focus:ring-naturalbio-verde;
+}
+
+.btn-secondary {
+    @apply text-gray-700 bg-white border-gray-300 hover:bg-gray-50 focus:ring-naturalbio-verde;
+}
+
+.btn-danger {
+    @apply text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
+}
+
+/* Formularios */
+.form-group {
+    @apply mb-4;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.form-input {
+    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-naturalbio-verde focus:ring focus:ring-naturalbio-verde focus:ring-opacity-50;
+}
+
+/* Multistep form */
+.step-indicator {
+    @apply flex items-center;
+}
+
+.step-bubble {
+    @apply h-10 w-10 rounded-full flex items-center justify-center border-2 text-sm font-medium;
+}
+
+.step-bubble-active {
+    @apply border-naturalbio-verde bg-naturalbio-verde text-white;
+}
+
+.step-bubble-complete {
+    @apply border-naturalbio-verde bg-naturalbio-verde-100 text-naturalbio-verde;
+}
+
+.step-bubble-inactive {
+    @apply border-gray-300 bg-white text-gray-500;
+}
+
+.step-line {
+    @apply flex-1 h-0.5 bg-gray-300;
+}
+
+.step-line-active {
+    @apply bg-naturalbio-verde;
+}
+
+/* Scrollbar personalizado */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(156, 163, 175, 0.7);
+}
+/* Importar las mejoras responsivas */
+@import './responsive-fixes.css';

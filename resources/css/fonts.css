@@ -1,0 +1,10 @@
+/* Importación de fuentes desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Nunito:wght@400&family=Pacifico&family=Poppins:wght@400&display=swap');
+
+/* Variables CSS para fuentes NaturalBio */
+:root {
+  --font-title: 'Montserrat', sans-serif;
+  --font-body: 'Poppins', sans-serif;
+  --font-secondary: 'Nunito', sans-serif;
+  --font-accent: 'Pacifico', cursive;
+}

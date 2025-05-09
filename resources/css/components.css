@@ -1,0 +1,53 @@
+@layer components {
+    /* Botones según la identidad de NaturalBio */
+    .btn-primary {
+        @apply py-2 px-4 bg-naturalbio-verde text-white rounded-lg shadow-md hover:bg-naturalbio-azul focus:outline-none focus:ring-2 focus:ring-naturalbio-verde focus:ring-opacity-75 transition-colors font-title font-semibold;
+    }
+    
+    .btn-secondary {
+        @apply py-2 px-4 bg-naturalbio-azul text-white rounded-lg shadow-md hover:bg-naturalbio-dorado focus:outline-none focus:ring-2 focus:ring-naturalbio-azul focus:ring-opacity-75 transition-colors font-title font-semibold;
+    }
+    
+    .btn-outline {
+        @apply py-2 px-4 border-2 border-naturalbio-verde text-naturalbio-verde rounded-lg hover:bg-naturalbio-verde hover:text-white focus:outline-none focus:ring-2 focus:ring-naturalbio-verde focus:ring-opacity-75 transition-colors font-title font-semibold;
+    }
+    
+    .btn-premium {
+        @apply py-2 px-4 bg-naturalbio-dorado text-white rounded-lg shadow-md hover:bg-naturalbio-gris focus:outline-none focus:ring-2 focus:ring-naturalbio-dorado focus:ring-opacity-75 transition-colors font-title font-semibold;
+    }
+    
+    /* Tarjetas para servicios y productos */
+    .card-naturalbio {
+        @apply bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow;
+    }
+    
+    .card-service {
+        @apply card-naturalbio border-t-4 border-naturalbio-verde;
+    }
+    
+    .card-product {
+        @apply card-naturalbio border-t-4 border-naturalbio-dorado;
+    }
+    
+    .card-diagnostic {
+        @apply card-naturalbio border-t-4 border-naturalbio-azul;
+    }
+    
+    /* Encabezados según la identidad de marca */
+    .heading-primary {
+        @apply text-naturalbio-verde font-title font-bold;
+    }
+    
+    .heading-secondary {
+        @apply text-naturalbio-azul font-title font-semibold;
+    }
+    
+    .text-accent {
+        @apply font-accent text-naturalbio-dorado;
+    }
+    
+    /* Contenedores específicos */
+    .container-naturalbio {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+}

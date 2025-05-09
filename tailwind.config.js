@@ -1,0 +1,112 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+    darkMode: 'class',
+    content: [
+        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+        './vendor/laravel/jetstream/**/*.blade.php',
+        './storage/framework/views/*.php',
+        './resources/views/**/*.blade.php',
+        './resources/js/**/*.vue',
+    ],
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Poppins', ...defaultTheme.fontFamily.sans],
+                title: ['Montserrat', ...defaultTheme.fontFamily.sans],
+                accent: ['Pacifico', ...defaultTheme.fontFamily.sans],
+                secondary: ['Nunito', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                'naturalbio': {
+                    'verde': {
+                        DEFAULT: '#4CAF50',
+                        '50': '#E8F5E9',
+                        '100': '#C8E6C9',
+                        '200': '#A5D6A7',
+                        '300': '#81C784',
+                        '400': '#66BB6A',
+                        '500': '#4CAF50',
+                        '600': '#43A047',
+                        '700': '#388E3C',
+                        '800': '#2E7D32',
+                        '900': '#1B5E20',
+                    },
+                    'azul': {
+                        DEFAULT: '#00ACC1',
+                        '50': '#E0F7FA',
+                        '100': '#B2EBF2',
+                        '200': '#80DEEA',
+                        '300': '#4DD0E1',
+                        '400': '#26C6DA',
+                        '500': '#00ACC1',
+                        '600': '#0097A7',
+                        '700': '#00838F',
+                        '800': '#006064',
+                        '900': '#004D40',
+                    },
+                    'dorado': {
+                        DEFAULT: '#FBC02D',
+                        '50': '#FFFDE7',
+                        '100': '#FFF9C4',
+                        '200': '#FFF59D',
+                        '300': '#FFF176',
+                        '400': '#FFEE58',
+                        '500': '#FFEB3B',
+                        '600': '#FDD835',
+                        '700': '#FBC02D',
+                        '800': '#F9A825',
+                        '900': '#F57F17',
+                    },
+                    'gris': {
+                        DEFAULT: '#546E7A',
+                        '50': '#ECEFF1',
+                        '100': '#CFD8DC',
+                        '200': '#B0BEC5',
+                        '300': '#90A4AE',
+                        '400': '#78909C',
+                        '500': '#607D8B',
+                        '600': '#546E7A',
+                        '700': '#455A64',
+                        '800': '#37474F',
+                        '900': '#263238',
+                    },
+                    'blanco': '#FFFFFF',
+                },
+            },
+            spacing: {
+                '72': '18rem',
+                '84': '21rem',
+                '96': '24rem',
+                '128': '32rem',
+            },
+            transitionProperty: {
+                'width': 'width',
+                'height': 'height',
+                'spacing': 'margin, padding',
+            },
+            transitionDuration: {
+                '250': '250ms',
+                '350': '350ms',
+                '400': '400ms',
+            },
+            zIndex: {
+                '60': '60',
+                '70': '70',
+                '80': '80',
+                '90': '90',
+                '100': '100',
+            },
+            boxShadow: {
+                'subtle': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                'stronger': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                'sidebar': '2px 0 10px 0 rgba(0, 0, 0, 0.05)',
+            },
+        },
+    },
+    plugins: [
+        require('@tailwindcss/forms'),
+        require('@tailwindcss/typography'),
+    ],
+};
