@@ -24,6 +24,7 @@ class AppointmentType extends Model
         'default_price',
         'default_duration',
         'active',
+        'is_emergency',
     ];
 
     /**
@@ -35,6 +36,7 @@ class AppointmentType extends Model
         'default_price' => 'decimal:2',
         'default_duration' => 'integer',
         'active' => 'boolean',
+        'is_emergency' => 'boolean',
     ];
 
     /**
@@ -58,6 +60,17 @@ class AppointmentType extends Model
     public function scopeActive($query)
     {
         return $query->where('active', true);
+    }
+
+    /**
+     * Scope a query to only include emergency appointment types.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeEmergency($query)
+    {
+        return $query->where('is_emergency', true);
     }
 
     /**

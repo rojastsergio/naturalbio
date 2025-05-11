@@ -4,6 +4,9 @@ namespace Modules\Appointments\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Gate;
+use Modules\Appointments\Models\AppointmentType;
+use Modules\Appointments\Policies\AppointmentTypePolicy;
 
 class AppointmentsServiceProvider extends ServiceProvider
 {
@@ -26,10 +29,13 @@ class AppointmentsServiceProvider extends ServiceProvider
     {
         // Cargar rutas
         $this->loadRoutes();
-        
+
         // Cargar migraciones
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
-        
+
+        // Registrar políticas
+        $this->registerPolicies();
+
         // Asegurarse de que los componentes Vue se registren
         $this->publishAssets();
     }
@@ -61,5 +67,15 @@ class AppointmentsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../Resources/js' => resource_path('js/modules/appointments'),
         ], 'appointments-assets');
+    }
+
+    /**
+     * Registrar las políticas del módulo.
+     *
+     * @return void
+     */
+    protected function registerPolicies()
+    {
+        Gate::policy(AppointmentType::class, AppointmentTypePolicy::class);
     }
 }

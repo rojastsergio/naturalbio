@@ -17,11 +17,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Dashboard del doctor
     Route::get('/doctor/dashboard', [DoctorController::class, 'dashboard'])->name('doctor.dashboard');
-    
+
     // Gestión de disponibilidad
     Route::get('/doctor/availability', [DoctorAvailabilityController::class, 'index'])->name('doctor.availability');
     Route::get('/doctors/{doctor}/availability', [DoctorAvailabilityController::class, 'index'])->name('doctors.availability');
-    
+
+    // Gestión de emergencias
+    Route::get('/doctor/emergency', [DoctorController::class, 'emergency'])->name('doctor.emergency');
+
     // Instrucciones terapéuticas
     Route::get('/doctor/therapy-instructions', [TherapyInstructionController::class, 'index'])->name('doctor.therapy-instructions');
     Route::get('/doctors/{doctor}/therapy-instructions', [TherapyInstructionController::class, 'index'])->name('doctors.therapy-instructions');

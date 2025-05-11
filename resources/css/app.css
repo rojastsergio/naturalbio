@@ -3,14 +3,19 @@
 @import 'tailwindcss/components';
 @import './components.css';
 @import 'tailwindcss/utilities';
+@import './responsive-fixes.css';
 
 /* Variables CSS personalizadas */
 :root {
-    --color-verde: #4CAF50;
-    --color-azul: #00ACC1;
-    --color-dorado: #FBC02D;
-    --color-gris: #546E7A;
-    --color-blanco: #FFFFFF;
+    --color-naturalbio-verde: #4CAF50;
+    --color-naturalbio-verde-hover: #3d9140;
+    --color-naturalbio-verde-light: #E8F5E9;
+    --color-naturalbio-azul: #00ACC1;
+    --color-naturalbio-azul-hover: #0097a7;
+    --color-naturalbio-dorado: #FBC02D;
+    --color-naturalbio-dorado-hover: #f2ab0d;
+    --color-naturalbio-gris: #546E7A;
+    --color-naturalbio-gris-light: #ECEFF1;
 }
 
 /* Estilos base */

@@ -2,32 +2,37 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Patients\Controllers\PatientController;
-use Modules\Patients\Controllers\VitalSignController;
+use Modules\Patients\Models\Patient;
+use Illuminate\Http\Request;
 
-Route::middleware(['auth:sanctum'])->prefix('api')->group(function () {
-    // API routes for patients
-    Route::get('/patients', [PatientController::class, 'index'])
-        ->middleware('check.permission:view patients');
-    
-    Route::post('/patients', [PatientController::class, 'store'])
-        ->middleware('check.permission:create patients');
-    
-    Route::get('/patients/{patient}', [PatientController::class, 'show'])
-        ->middleware('check.permission:view patients');
-    
-    Route::put('/patients/{patient}', [PatientController::class, 'update'])
-        ->middleware('check.permission:update patients');
-    
-    Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])
-        ->middleware('check.permission:delete patients');
-
-    // API routes for vital signs
-    Route::post('/patients/{patient}/vitals', [VitalSignController::class, 'store'])
-        ->middleware('check.permission:create vitals');
-    
-    Route::put('/vitals/{vitalSign}', [VitalSignController::class, 'update'])
-        ->middleware('check.permission:update vitals');
-    
-    Route::delete('/vitals/{vitalSign}', [VitalSignController::class, 'destroy'])
-        ->middleware('check.permission:delete vitals');
+Route::middleware(['api'])->group(function () {
+    // Ruta pública para buscar pacientes desde otros módulos
+    Route::get('/search', function (Request $request) {
+        $search = $request->input('search', '');
+        
+        if (strlen($search) < 2) {
+            return response()->json(['patients' => []]);
+        }
+        
+        $patients = Patient::select('id', 'name', 'last_name', 'expedient_number')
+            ->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('expedient_number', 'like', "%{$search}%");
+            })
+            ->orderBy('name')
+            ->limit(10)
+            ->get()
+            ->map(function ($patient) {
+                return [
+                    'id' => $patient->id,
+                    'name' => $patient->name,
+                    'last_name' => $patient->last_name,
+                    'expedient_number' => $patient->expedient_number,
+                    'full_name' => "{$patient->name} {$patient->last_name}" . ($patient->expedient_number ? " (#{$patient->expedient_number})" : "")
+                ];
+            });
+        
+        return response()->json(['patients' => $patients]);
+    })->name('api.patients.search');
 });

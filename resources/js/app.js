@@ -11,7 +11,7 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     // Agregar la base URL para el subdirectorio
-    base: '/naturalbiosolutions',
+    base: '/naturalbio',
     resolve: (name) => {
         // Comprueba si es un componente de un módulo
         const parts = name.split('/');

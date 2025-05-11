@@ -231,7 +231,7 @@
         // Calcular hora de fin basada en la duración
         this.form.end_time = this.calculateEndTime();
         
-        axios.post('/api/appointments/emergency', this.form)
+        axios.post(route('api.appointments.emergency'), this.form)
           .then(response => {
             this.$inertia.visit(route('appointments.show', response.data.id), {
               onFinish: () => {

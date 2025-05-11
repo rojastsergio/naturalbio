@@ -8,12 +8,14 @@
   
       <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-            <availability-calendar 
+          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
+            <availability-calendar
               :availabilities="availabilities"
+              :appointments="doctorAppointments"
+              :allowEditing="true"
               @month-changed="fetchAvailabilities"
               @new-availability="showNewAvailabilityModal = true"
-              @add-time-slot="addTimeSlot"
+              @availability-create="addTimeSlot"
               @edit-availability="editAvailability"
             />
           </div>
@@ -147,6 +149,10 @@
     props: {
       doctor: Object,
       availabilities: Array,
+      appointments: {
+        type: Array,
+        default: () => []
+      },
       filters: Object
     },
     data() {
@@ -154,6 +160,7 @@
         showNewAvailabilityModal: false,
         editMode: false,
         currentAvailabilityId: null,
+        doctorAppointments: this.appointments || [],
         availabilityForm: {
           doctor_id: this.doctor ? this.doctor.id : null,
           date: '',
@@ -182,18 +189,35 @@
         date.setMonth(date.getMonth() + 1);
         return date.toISOString().split('T')[0];
       },
-      addTimeSlot(date) {
+      addTimeSlot(slotData) {
         this.editMode = false;
         this.currentAvailabilityId = null;
+
+        // El formato puede ser una fecha (del antiguo calendario) o un objeto con date, start_time, end_time
+        let date, startTime, endTime;
+
+        if (typeof slotData === 'string') {
+          // Formato antiguo (solo recibe la fecha)
+          date = slotData;
+          startTime = '09:00';
+          endTime = '10:00';
+        } else {
+          // Formato nuevo (recibe un objeto con toda la información)
+          date = slotData.date;
+          startTime = slotData.start_time ? slotData.start_time.substring(0, 5) : '09:00';
+          endTime = slotData.end_time ? slotData.end_time.substring(0, 5) : '10:00';
+        }
+
         this.availabilityForm = {
           doctor_id: this.doctor ? this.doctor.id : null,
           date: date,
-          start_time: '09:00',
-          end_time: '10:00',
+          start_time: startTime,
+          end_time: endTime,
           recurrence: '',
           recurrence_end: '',
           active: true
         };
+
         this.showNewAvailabilityModal = true;
       },
       editAvailability(availability) {

@@ -80,14 +80,32 @@ class DoctorService
 
     /**
      * Obtener el doctor asociado al usuario actual.
+     * Si el usuario tiene el rol de doctor pero no tiene registro, lo crea automáticamente.
      */
     public function getCurrentDoctor()
     {
         if (!Auth::check()) {
             return null;
         }
-        
-        return Doctor::where('user_id', Auth::id())->first();
+
+        $user = Auth::user();
+
+        // Verificar si el usuario ya tiene un registro de doctor
+        $doctor = Doctor::where('user_id', $user->id)->first();
+
+        // Si no tiene registro pero tiene el rol de doctor, crearlo automáticamente
+        if (!$doctor && $user->hasRole('doctor') && $user->clinic_id) {
+            $doctor = Doctor::create([
+                'user_id' => $user->id,
+                'clinic_id' => $user->clinic_id,
+                'specialty' => 'Medicina General', // Valor por defecto
+                'accepts_emergencies' => true, // Por defecto
+            ]);
+
+            \Log::info("Creado automáticamente registro de doctor para el usuario ID {$user->id}");
+        }
+
+        return $doctor;
     }
 
     /**

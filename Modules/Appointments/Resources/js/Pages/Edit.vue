@@ -29,7 +29,7 @@
   import { computed } from 'vue';
   import { router } from '@inertiajs/vue3';
   import AppLayout from '@/Layouts/AppLayout.vue';
-  import AppointmentForm from '../../../resources/js/Components/AppointmentForm.vue';
+  import AppointmentForm from '../Components/AppointmentForm.vue';
   
   const props = defineProps({
     appointment: {

@@ -17,6 +17,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->name('api.appointments.availability');
     Route::post('/appointments/{appointment}/reminder', [AppointmentController::class, 'sendReminder'])
         ->name('api.appointments.reminder');
+    Route::post('/appointments/emergency', [AppointmentController::class, 'storeEmergency'])
+        ->name('api.appointments.emergency');
     
     // Appointment Types
     Route::apiResource('appointment-types', AppointmentTypeController::class, [

@@ -1,308 +1,235 @@
-/* Corrección de interactividad en la interfaz */
-* {
-    pointer-events: auto !important;
-}
+/* NaturalBIO - Responsive Fixes
+=============================================
+Este archivo contiene correcciones específicas para problemas de
+visualización en dispositivos móviles y tablets.
+*/
 
-/* Asegurar que no hay capas invisibles bloqueando la interacción */
-.min-h-screen::before,
-.min-h-screen::after,
-body::before,
-body::after,
-div::before,
-div::after {
-    content: none !important;
-    display: none !important;
-    pointer-events: none !important;
-    background: transparent !important;
-    opacity: 0 !important;
-}
-
-/* Restaurar la opacidad normal del contenido */
-body, 
-.min-h-screen, 
-.sidebar, 
-.main-content, 
-.card, 
-button, 
-a, 
-input, 
-select, 
-table, 
-tr, 
-td {
-    opacity: 1 !important;
-    filter: none !important;
-}
-
-/* Asegurar que los elementos de la tabla son interactivos */
-td, th, tr {
-    pointer-events: auto !important;
-    position: relative;
-    z-index: 1;
-}
-
-/* Corregir el fondo gris para asegurar que es opaco */
-.bg-gray-100, 
-.main-content, 
-body {
-    background-color: #f3f4f6 !important;
-}
-
-/* Asegurar que el contenido principal es completamente interactivo */
-.main-content {
-    z-index: 5 !important;
-    position: relative !important;
-}
-
-/* Asegurar que los enlaces y botones son interactivos */
-a, button, input, select, textarea {
-    cursor: pointer !important;
-    pointer-events: auto !important;
-    position: relative;
-    z-index: 10;
-}
-
-/* Corrección de scroll vertical general */
+/* Correcciones generales */
 html, body {
-    height: 100%;
-    overflow-y: auto !important; /* Forzar scroll vertical */
-    overflow-x: hidden;
+    overflow-x: hidden !important;
     position: relative;
 }
 
-/* Corrección para contenedor principal */
-.min-h-screen {
-    min-height: 100vh;
-    overflow-y: auto !important;
-    padding-bottom: 1rem;
-}
-
-/* Permitir desplazamiento en contenido principal */
-main {
-    overflow-y: auto !important;
+/* Mejora del scrolling en dispositivos táctiles */
+* {
     -webkit-overflow-scrolling: touch;
 }
 
-/* Correcciones para el problema de interactividad */
-body::before,
-body::after,
-.min-h-screen::before,
-.min-h-screen::after {
-    content: none !important;
-    display: none !important;
-}
-
-/* Asegurar que no hay capas que bloqueen la interacción */
-.pointer-events-none {
-    pointer-events: auto !important;
-}
-
-/* Restaurar colores normales */
-.opacity-50,
-.bg-opacity-50:not(.sidebar-overlay):not([v-if="sidebarMobileOpen"]) {
-    opacity: 1 !important;
-}
-
-/* Corrección específica para el contenido principal */
-main {
-    background-color: #f3f4f6 !important; /* Restaurar color de fondo */
-    filter: none !important; /* Eliminar cualquier filtro */
-}
-
-/* Asegurar que las tablas y listas sean interactivas */
-table, tr, td, a, button, input, select {
-    pointer-events: auto !important;
-}
-
-/* Eliminación de cualquier overlay persistente */
-.fixed.inset-0:not(.sidebar):not([v-if="sidebarMobileOpen"]) {
-    display: none !important;
-}
-
-/* Mejoras responsivas globales */
-
-/* Ajustes para el sidebar en móvil */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 85% !important;
-        max-width: 280px;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease-in-out;
-        z-index: 50;
-    }
-    
-    .sidebar-mobile-open {
-        transform: translateX(0) !important;
-    }
-    
-    /* Ajuste del contenido principal */
-    .main-content {
-        margin-left: 0 !important;
-        padding-left: 0 !important;
-        width: 100%;
-        overflow-y: auto !important;
-        height: auto !important;
-        min-height: 100vh;
-    }
-    
-    /* Overlay para cuando el sidebar está abierto */
-    .sidebar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 40;
-    }
-    
-    /* Mejoras para iconos en sidebar móvil */
-    .sidebar-icon {
-        width: 1.25rem;
-        height: 1.25rem;
-        margin-right: 0.75rem;
-    }
-    
-    /* Mejor espaciado para elementos del sidebar */
-    .sidebar-link {
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.25rem;
-    }
-    
-    /* Asegurar que los elementos del sidebar no se corten */
-    .sidebar-text {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    /* Ocultar encabezados de sección en colapsado */
-    .sidebar-collapsed .sidebar-section-header {
-        display: none;
-    }
-    
-    /* Mejorar la visualización de los íconos en modo colapsado */
-    .sidebar-collapsed .sidebar-icon {
-        margin: 0 auto;
-    }
-    
-    /* Correcciones para el scroll en dispositivos móviles */
-    body, html, .min-h-screen, main, .flex-1 {
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .overflow-hidden {
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
+/* Prevención de zoom automático en formularios (iOS) */
+@media not all and (min-resolution:.001dpcm) {
+    @supports (-webkit-appearance:none) {
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="password"],
+        input[type="date"],
+        input[type="tel"],
+        textarea,
+        select {
+            font-size: 16px !important;
+        }
     }
 }
 
-/* Tablas responsivas */
+/* Grid flexible optimizado - sin espacios innecesarios */
+.grid-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 !important;
+    gap: 0.75rem;
+}
+
+/* Mejorar visualización de contenedores */
 @media (max-width: 640px) {
+    .py-6 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+    
+    .px-6 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .container-naturalbio {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    /* Ajuste para headers */
+    h1, .h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    h2, .h2 {
+        font-size: 1.25rem !important;
+    }
+    
+    h3, .h3 {
+        font-size: 1.125rem !important;
+    }
+}
+
+/* Correcciones optimizadas para tablas en móvil */
+@media (max-width: 768px) {
     .table-responsive {
         display: block;
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        margin: 0;
+        padding: 0;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
     }
-    
-    /* Tarjetas de pacientes en modo vertical */
-    .patient-card {
+
+    .table-responsive table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    /* Tabla en modo tarjeta para móviles */
+    .table-mobile-card tbody tr {
+        display: block;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 0.5rem;
+        padding: 0.75rem 1rem;
+        background-color: white;
+    }
+
+    .table-mobile-card thead {
+        display: none;
+    }
+
+    .table-mobile-card td {
+        display: flex;
+        padding: 0.375rem 0;
+        border: none;
+        text-align: right;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-mobile-card td::before {
+        content: attr(data-label);
+        font-weight: 500;
+        width: 40%;
+        margin-right: 0.75rem;
+        text-align: left;
+        color: #6b7280;
+    }
+
+    /* Espaciado entre filas en modo lista */
+    .table-list tr {
         display: flex;
         flex-direction: column;
         padding: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+        background-color: white;
     }
-    
-    .patient-card-avatar {
-        margin-bottom: 0.5rem;
-        margin-right: 0;
-        align-self: center;
-    }
-    
-    .patient-card-info {
-        width: 100%;
-    }
-}
 
-/* Form steps para móvil */
-@media (max-width: 640px) {
-    .step-indicator {
-        overflow-x: auto;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1rem;
-        -webkit-overflow-scrolling: touch;
+    .table-list th {
+        display: none;
+    }
+
+    .table-list td {
         display: flex;
-        white-space: nowrap;
+        padding: 0.375rem 0;
+        border: none;
     }
-    
-    .step-indicator::-webkit-scrollbar {
-        height: 4px;
+
+    .table-list td::before {
+        content: attr(data-label);
+        font-weight: 500;
+        width: 40%;
+        margin-right: 0.5rem;
     }
-    
-    .step-indicator::-webkit-scrollbar-thumb {
-        background-color: rgba(156, 163, 175, 0.5);
-        border-radius: 9999px;
-    }
-    
-    .form-row {
-        flex-direction: column;
-    }
-    
-    .form-row > div {
-        width: 100%;
-        margin-right: 0;
+
+    /* Estilos de tarjeta para tablas responsivas */
+    .card-table {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         margin-bottom: 1rem;
     }
-    
-    /* Mejoras para indicador de pasos */
-    .step-bubble {
-        width: 2rem;
-        height: 2rem;
-        font-size: 0.875rem;
-    }
-    
-    .step-line {
-        width: 1.5rem;
-    }
-    
-    /* Mejorar visualización de formularios multistep */
-    .step-content {
-        padding: 1rem;
+
+    /* Ajuste de anchura para tablas en modo tarjeta */
+    .card-table td, .card-table th {
+        padding: 0.75rem 1rem;
+        white-space: normal;
     }
 }
 
-/* Container Cards */
+/* Correcciones para sidebar */
+@media (max-width: 768px) {
+    .sidebar-wrapper {
+        width: 85% !important;
+        max-width: 280px !important;
+    }
+    
+    .sidebar-collapsed {
+        width: 3.5rem !important; /* 56px */
+    }
+    
+    /* Mejorar transición de sidebar móvil */
+    .sidebar-mobile {
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    /* Mayor contraste para el overlay */
+    .sidebar-overlay {
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(2px);
+    }
+}
+
+/* Corregir posición de títulos móviles */
 @media (max-width: 640px) {
-    .container-card {
+    .mobile-page-title {
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* Correcciones para tarjetas en dispositivos móviles */
+@media (max-width: 640px) {
+    .card {
         border-radius: 0.5rem;
         margin-bottom: 1rem;
     }
     
-    .container-header {
-        padding: 0.75rem 1rem;
+    .card-header {
         flex-direction: column;
         align-items: flex-start;
+        padding: 0.75rem 1rem;
     }
     
-    .container-header > div:first-child {
+    .card-header > div:first-child {
         margin-bottom: 0.5rem;
         width: 100%;
     }
     
-    .container-body {
+    .card-body {
         padding: 0.75rem 1rem;
+    }
+    
+    .card-header-actions {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 0.5rem;
     }
 }
 
-/* Botones en móvil */
+/* Mejoras para botones responsivos */
 @media (max-width: 640px) {
-    .btn-full-mobile {
-        width: 100%;
-        justify-content: center;
-        margin-bottom: 0.5rem;
-    }
-    
     .btn-group-mobile {
         display: flex;
         flex-direction: column;
@@ -312,159 +239,167 @@ table, tr, td, a, button, input, select {
     .btn-group-mobile > * {
         margin-bottom: 0.5rem;
         width: 100%;
+        justify-content: center;
     }
     
-    /* Ajustes para botones flotantes en móvil */
-    .fixed-bottom-button {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 0.75rem;
-        background-color: white;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-        z-index: 20;
-    }
-    
-    /* Ajuste para dar espacio a botones flotantes */
-    .has-fixed-button {
-        padding-bottom: 4rem;
+    .btn-full-mobile {
+        width: 100% !important;
+        justify-content: center !important;
+        margin-bottom: 0.5rem;
     }
 }
 
-/* Mejoras para los componentes de navegación */
-@media (max-width: 768px) {
-    .top-navbar {
-        padding: 0.5rem;
-    }
-    
-    .navbar-content {
-        height: auto;
-        min-height: 3.5rem;
-    }
-    
-    /* Mejoras para el título de la página en móvil */
-    .mobile-page-title {
-        font-size: 1.125rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 200px;
-    }
-    
-    /* Mejorar visibilidad del hamburger menu */
-    .hamburger-button {
-        padding: 0.5rem;
-    }
-    
-    .hamburger-button svg {
-        width: 1.5rem;
-        height: 1.5rem;
-    }
-}
-
-/* Ajustes para contenedores principales */
+/* Mejorar la visualización de formularios en móvil */
 @media (max-width: 640px) {
-    .py-6 {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
+    .form-group {
+        margin-bottom: 1.25rem;
     }
-    
-    .px-6 {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    
-    .my-6 {
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    }
-    
-    .mx-6 {
-        margin-left: 1rem;
-        margin-right: 1rem;
-    }
-}
 
-/* Ajustes para listas y grids */
-@media (max-width: 640px) {
-    .grid-cols-1-mobile {
+    .form-grid {
+        display: grid;
         grid-template-columns: 1fr !important;
+        gap: 1rem;
     }
-    
-    .grid-gap-2-mobile {
-        gap: 0.5rem !important;
-    }
-}
 
-/* Correcciones para campos de formulario */
-@media (max-width: 640px) {
+    .form-row {
+        flex-direction: column;
+    }
+
+    .form-row > div {
+        width: 100% !important;
+        margin-right: 0 !important;
+        margin-bottom: 1.25rem;
+    }
+
+    /* Optimizar cajas de selección */
+    select {
+        background-position: right 0.5rem center !important;
+        padding-right: 2rem !important;
+        height: 3rem;
+    }
+
+    /* Inputs más grandes para mobile */
     input[type="text"],
     input[type="email"],
     input[type="password"],
     input[type="number"],
     input[type="date"],
     input[type="tel"],
-    select,
     textarea {
-        font-size: 16px !important; /* Evita zoom automático en iOS */
+        height: 3rem;
+        padding: 0.75rem 1rem;
+        font-size: 16px !important; /* Evita zoom en iOS */
     }
-    
+
+    /* Etiquetas de formulario */
     .form-label {
-        margin-bottom: 0.25rem;
-        font-size: 0.875rem;
-    }
-    
-    /* Mejorar apariencia de selects e inputs */
-    select, input {
-        height: 2.5rem;
-        padding: 0.5rem;
-    }
-    
-    /* Mejorar legibilidad de placeholders */
-    ::placeholder {
-        color: rgba(107, 114, 128, 0.5);
-    }
-}
-
-/* Mejoras para componentes expandibles y acordeones */
-@media (max-width: 640px) {
-    .mobile-collapsible-header {
-        padding: 0.75rem;
-        font-size: 0.875rem;
-    }
-    
-    .mobile-collapsible-content {
-        padding: 0.75rem;
-    }
-}
-
-/* Mejoras adicionales para sidebar colapsado */
-@media (max-width: 768px) {
-    .sidebar-collapsed {
-        width: 3.5rem !important;
-    }
-    
-    .sidebar-collapsed .sidebar-link {
-        padding: 0.75rem 0;
-    }
-    
-    .sidebar-collapsed .sidebar-section {
+        font-size: 0.9rem;
+        font-weight: 500;
         margin-bottom: 0.5rem;
     }
+
+    /* Botones mejorados para multistep */
+    .btn-prev,
+    .btn-next {
+        height: 3rem;
+        min-width: 120px;
+        padding: 0 1rem;
+    }
+
+    /* Optimización botones en multistep */
+    .step-buttons {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eaeaea;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
 }
 
-/* Optimización de estadísticas en cards */
+/* Arreglos para estadísticas */
 @media (max-width: 640px) {
-    .stat-number {
-        font-size: 1.5rem;
-    }
-    
-    .stat-label {
-        font-size: 0.75rem;
+    .stats-grid {
+        grid-template-columns: 1fr !important;
     }
     
     .stat-card {
-        padding: 0.75rem;
+        padding: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem !important;
     }
 }
+
+/* Mejoras para calendario y fechas en móvil */
+@media (max-width: 640px) {
+    .fc-header-toolbar {
+        flex-wrap: wrap;
+    }
+    
+    .fc-toolbar-chunk {
+        margin-bottom: 0.5rem;
+    }
+    
+    .fc-daygrid-day-number {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Corrección para modales responsivos */
+@media (max-width: 640px) {
+    .modal-container {
+        margin: 1rem;
+        width: calc(100% - 2rem) !important;
+        max-width: none !important;
+    }
+    
+    .modal-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .modal-body {
+        padding: 0.75rem 1rem;
+        max-height: 70vh;
+    }
+    
+    .modal-footer {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Optimizaciones para pantallas en medio (tablets) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .tablet-auto-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    
+    .sidebar-collapsed {
+        width: 4rem !important; /* 64px para tablets */
+    }
+    
+    .main-content {
+        margin-left: 4rem !important;
+    }
+}
+
+/* Mejoras para el footer en dispositivos pequeños */
+@media (max-width: 640px) {
+    footer {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Asegurar que el contenido principal no se oculta bajo el navbar */
+@media (max-width: 768px) {
+    .main-content {
+        padding-top: 0 !important;
+    }
+}
+
+/* Arreglos para sobreposición de elementos */
+.z-10 { z-index: 10 !important; }
+.z-20 { z-index: 20 !important; }
+.z-30 { z-index: 30 !important; }
+.z-40 { z-index: 40 !important; }
+.z-50 { z-index: 50 !important; }

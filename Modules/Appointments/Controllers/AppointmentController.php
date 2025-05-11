@@ -10,6 +10,8 @@ use Modules\Appointments\Services\AvailabilityService;
 use Modules\Appointments\Models\Appointment;
 use Modules\Appointments\Models\AppointmentType;
 use Modules\Patients\Models\Patient;
+use Modules\Therapies\Models\Therapy;
+use App\Models\User;
 use Inertia\Inertia;
 use Exception;
 
@@ -84,21 +86,21 @@ class AppointmentController extends Controller
     public function create(Request $request)
     {
        // $this->authorize('create', Appointment::class);
-        
+
         $clinicId = $request->user()->clinic_id;
-        
+
         // Obtener tipos de cita
         $appointmentTypes = AppointmentType::forClinic($clinicId)
             ->active()
             ->select('id', 'name', 'color', 'default_duration', 'default_price')
             ->get();
-        
+
         // Obtener paciente si hay un ID en la URL
         $patient = null;
         if ($request->has('patient_id')) {
             $patient = Patient::findOrFail($request->input('patient_id'));
         }
-        
+
         // Obtener doctores (usuarios con rol doctor)
         $doctors = \App\Models\User::whereHas('roles', function ($query) {
                 $query->where('name', 'doctor');
@@ -106,11 +108,27 @@ class AppointmentController extends Controller
             ->where('clinic_id', $clinicId)
             ->select('id', 'name')
             ->get();
-        
+
+        // Obtener terapias disponibles
+        $therapies = \Modules\Therapies\Models\Therapy::forClinic($clinicId)
+            ->active()
+            ->select('id', 'name', 'description', 'default_price', 'default_duration')
+            ->get();
+
+        // Obtener terapeutas (usuarios con rol de terapeuta)
+        $therapists = \App\Models\User::whereHas('roles', function ($query) {
+                $query->where('name', 'therapist');
+            })
+            ->where('clinic_id', $clinicId)
+            ->select('id', 'name')
+            ->get();
+
         return Inertia::render('Appointments/Create', [
             'appointmentTypes' => $appointmentTypes,
             'patient' => $patient,
             'doctors' => $doctors,
+            'therapies' => $therapies,
+            'therapists' => $therapists,
             'defaultDate' => now()->format('Y-m-d'),
         ]);
     }
@@ -320,13 +338,54 @@ class AppointmentController extends Controller
     public function sendReminder(Request $request, Appointment $appointment)
     {
         $this->authorize('sendReminder', $appointment);
-        
+
         // Esta función se implementará cuando se agregue la funcionalidad de notificaciones
         // Por ahora, solo retornamos un mensaje de éxito simulado
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Recordatorio enviado exitosamente.'
         ]);
+    }
+
+    /**
+     * Create an emergency appointment.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storeEmergency(Request $request)
+    {
+        // Validar la solicitud
+        $validated = $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'doctor_id' => 'required|exists:doctors,id',
+            'appointment_type_id' => 'required|exists:appointment_types,id',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after:start_time',
+            'notes' => 'required|string',
+        ]);
+
+        // Marcar como emergencia
+        $validated['emergency'] = true;
+        $validated['status'] = 'scheduled';
+        $validated['clinic_id'] = $request->user()->clinic_id;
+        $validated['created_by'] = $request->user()->id;
+
+        try {
+            // Crear la cita de emergencia
+            $appointment = $this->appointmentService->createAppointment($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'La cita de emergencia fue registrada exitosamente.',
+                'id' => $appointment->id
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 }

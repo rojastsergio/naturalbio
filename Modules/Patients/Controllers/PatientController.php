@@ -117,6 +117,13 @@ class PatientController extends Controller
             $signature
         );
 
+        // Si se incluye el parámetro redirect_after, redireccionar a esa ruta
+        if ($request->has('redirect_after')) {
+            return redirect($request->input('redirect_after'))
+                ->with('success', 'Paciente creado exitosamente.');
+        }
+
+        // En caso contrario, redireccionar a la vista de detalle del paciente
         return redirect()->route('patients.show', $patient)
             ->with('success', 'Paciente creado exitosamente.');
     }
@@ -200,5 +207,52 @@ class PatientController extends Controller
 
         return redirect()->route('patients.index')
             ->with('success', 'Paciente eliminado exitosamente.');
+    }
+
+    /**
+     * Search for patients by name, last name or expedient number
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request)
+    {
+        $search = $request->input('search', '');
+
+        if (strlen($search) < 2) {
+            return response()->json(['patients' => []]);
+        }
+
+        // Query simple para evitar problemas
+        $patients = [];
+
+        // Obtener pacientes de la base de datos
+        $query = Patient::query();
+
+        // Filtrar por nombre, apellido o número de expediente
+        $query->where('name', 'like', "%{$search}%")
+              ->orWhere('last_name', 'like', "%{$search}%")
+              ->orWhere('expedient_number', 'like', "%{$search}%");
+
+        // Limitar resultados
+        $query->limit(10);
+
+        // Ejecutar consulta
+        $results = $query->get();
+
+        // Formatear resultados
+        foreach ($results as $patient) {
+            $patients[] = [
+                'id' => $patient->id,
+                'name' => $patient->name,
+                'last_name' => $patient->last_name,
+                'expedient_number' => $patient->expedient_number,
+                'full_name' => "{$patient->name} {$patient->last_name}" . ($patient->expedient_number ? " (#{$patient->expedient_number})" : "")
+            ];
+        }
+
+        return response()->json([
+            'patients' => $patients
+        ]);
     }
 }

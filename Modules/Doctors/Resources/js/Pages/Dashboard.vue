@@ -63,7 +63,7 @@
             </inertia-link>
   
             <inertia-link
-              :href="route('appointments.emergency')"
+              :href="route('doctor.emergency')"
               class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

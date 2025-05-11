@@ -32,7 +32,6 @@ class DatabaseSeeder extends Seeder
             PrescriptionsTableSeeder::class,
             PrescriptionItemsTableSeeder::class,
             PatientRecommendationsSeeder::class,
-            RecommendationPermissionsSeeder::class,
         ]);
 
         // Crear un usuario administrador usando firstOrCreate

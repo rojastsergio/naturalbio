@@ -230,10 +230,14 @@ class AppointmentService
             throw new Exception('Existe un conflicto de horario con otra cita.');
         }
         
-        // Verificar disponibilidad del doctor
-        $availabilityService = app(AvailabilityService::class);
-        if (!$availabilityService->isDoctorAvailable($doctorId, $clinicId, $startTime, $endTime)) {
-            throw new Exception('El doctor no está disponible en el horario seleccionado.');
+        // Verificar disponibilidad del doctor solo si está asignado
+        if ($doctorId) {
+            $availabilityService = app(AvailabilityService::class);
+
+            // Si el doctor tiene horarios configurados y ninguno cubre esta hora
+            if (!$availabilityService->isDoctorAvailable($doctorId, $clinicId, $startTime, $endTime)) {
+                throw new Exception('El doctor no está disponible en el horario seleccionado.');
+            }
         }
         
         return true;

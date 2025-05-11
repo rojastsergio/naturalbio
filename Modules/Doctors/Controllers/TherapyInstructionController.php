@@ -14,7 +14,8 @@ class TherapyInstructionController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('permission:manage therapy_instructions');
+        // Solo aplicar el middleware de permisos a ciertas acciones que requieren privilegios adicionales
+        $this->middleware('permission:manage therapy_instructions', ['only' => ['store', 'update', 'destroy']]);
     }
 
     /**

@@ -10,9 +10,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('check.permission:view patients')
         ->name('patients.index');
         
+    // Ruta original en español con el permiso requerido
     Route::get('/pacientes/crear', [PatientController::class, 'create'])
         ->middleware('check.permission:create patients')
-        ->name('patients.create');
+        ->name('patients.create.es');
         
     Route::post('/pacientes', [PatientController::class, 'store'])
         ->middleware('check.permission:create patients')
@@ -33,6 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/pacientes/{patient}', [PatientController::class, 'destroy'])
         ->middleware('check.permission:delete patients')
         ->name('patients.destroy');
+
 
     // Rutas de signos vitales con middleware de permisos
     Route::post('/pacientes/{patient}/signos-vitales', [VitalSignController::class, 'store'])

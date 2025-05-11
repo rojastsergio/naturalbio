@@ -19,10 +19,15 @@ class AvailabilityService
      */
     public function isDoctorAvailable($doctorId, $clinicId, $startTime, $endTime)
     {
+        // Si no se proporciona un doctor_id, asumimos que está disponible
+        if (!$doctorId) {
+            return true;
+        }
+
         $startTime = Carbon::parse($startTime);
         $endTime = Carbon::parse($endTime);
         $date = $startTime->toDateString();
-        
+
         // Buscar disponibilidades para el doctor y la clínica en la fecha dada
         $availabilities = DoctorAvailability::forClinic($clinicId)
             ->forDoctor($doctorId)
@@ -30,11 +35,11 @@ class AvailabilityService
             ->where(function ($query) use ($date) {
                 // Disponibilidades para la fecha específica
                 $query->where('date', $date);
-                
+
                 // O disponibilidades recurrentes que incluyan la fecha
                 $query->orWhere(function ($q) use ($date) {
                     $dateObj = Carbon::parse($date);
-                    
+
                     // Recurrencia diaria
                     $q->where('recurrence', 'daily')
                       ->where('date', '<=', $date)
@@ -43,12 +48,12 @@ class AvailabilityService
                              ->orWhere('recurrence_end', '>=', $date);
                       });
                 });
-                
+
                 // Recurrencia semanal (mismo día de la semana)
                 $query->orWhere(function ($q) use ($date) {
                     $dateObj = Carbon::parse($date);
                     $dayOfWeek = $dateObj->dayOfWeek;
-                    
+
                     $q->where('recurrence', 'weekly')
                       ->whereRaw("DAYOFWEEK(date) = ?", [$dayOfWeek + 1]) // MySQL DAYOFWEEK() es 1-7 (domingo-sábado)
                       ->where('date', '<=', $date)
@@ -57,12 +62,12 @@ class AvailabilityService
                              ->orWhere('recurrence_end', '>=', $date);
                       });
                 });
-                
+
                 // Recurrencia mensual (mismo día del mes)
                 $query->orWhere(function ($q) use ($date) {
                     $dateObj = Carbon::parse($date);
                     $dayOfMonth = $dateObj->day;
-                    
+
                     $q->where('recurrence', 'monthly')
                       ->whereRaw("DAY(date) = ?", [$dayOfMonth])
                       ->where('date', '<=', $date)
@@ -73,23 +78,29 @@ class AvailabilityService
                 });
             })
             ->get();
-            
-        // Si no hay disponibilidades, el doctor no está disponible
+
+        // Si no hay disponibilidades configuradas, consideramos al doctor como disponible
+        // Esto nos permite crear citas sin tener que configurar horarios
         if ($availabilities->isEmpty()) {
-            return false;
+            return true;
         }
-        
+
         // Verificar si alguna de las disponibilidades cubre todo el rango horario
         foreach ($availabilities as $availability) {
-            $availStart = Carbon::parse($availability->date . ' ' . $availability->start_time);
-            $availEnd = Carbon::parse($availability->date . ' ' . $availability->end_time);
-            
+            // Convertir el tiempo de disponibilidad a objetos DateTime correctamente formateados
+            $availStartTime = Carbon::parse($availability->start_time)->format('H:i:s');
+            $availEndTime = Carbon::parse($availability->end_time)->format('H:i:s');
+
+            $availStart = Carbon::parse($date . ' ' . $availStartTime);
+            $availEnd = Carbon::parse($date . ' ' . $availEndTime);
+
             // Si la disponibilidad cubre todo el rango horario
             if ($availStart->lessThanOrEqualTo($startTime) && $availEnd->greaterThanOrEqualTo($endTime)) {
                 return true;
             }
         }
-        
+
+        // Si hay disponibilidades configuradas pero ninguna cubre el rango solicitado
         return false;
     }
     

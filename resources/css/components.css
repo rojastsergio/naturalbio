@@ -1,53 +1,361 @@
 @layer components {
-    /* Botones según la identidad de NaturalBio */
+    /* Variables CSS para colores del tema */
+    :root {
+        --color-naturalbio-verde: #4CAF50;
+        --color-naturalbio-verde-hover: #3d9140;
+        --color-naturalbio-verde-light: #E8F5E9;
+        --color-naturalbio-azul: #00ACC1;
+        --color-naturalbio-azul-hover: #0097a7;
+        --color-naturalbio-dorado: #FBC02D;
+        --color-naturalbio-dorado-hover: #f2ab0d;
+        --color-naturalbio-gris: #546E7A;
+        --color-naturalbio-gris-light: #ECEFF1;
+    }
+
+    /* Sistema de grid flexible */
+    .grid-container {
+        @apply w-full;
+    }
+
+    /* Grid responsive */
+    .grid-row {
+        @apply flex flex-wrap -mx-2;
+    }
+
+    .grid-col {
+        @apply px-2 w-full;
+    }
+
+    /* Columnas responsivas */
+    .grid-col-1 {
+        @apply w-full px-2;
+    }
+
+    .grid-col-2 {
+        @apply w-full px-2 md:w-1/2;
+    }
+
+    .grid-col-3 {
+        @apply w-full px-2 md:w-1/2 lg:w-1/3;
+    }
+
+    .grid-col-4 {
+        @apply w-full px-2 sm:w-1/2 lg:w-1/4;
+    }
+
+    .grid-col-6 {
+        @apply w-full px-2 md:w-1/2 lg:w-1/6;
+    }
+
+    /* Botones según la identidad de NaturalBio (optimizados) */
     .btn-primary {
-        @apply py-2 px-4 bg-naturalbio-verde text-white rounded-lg shadow-md hover:bg-naturalbio-azul focus:outline-none focus:ring-2 focus:ring-naturalbio-verde focus:ring-opacity-75 transition-colors font-title font-semibold;
+        @apply py-2 px-4 bg-naturalbio-verde text-white rounded-md shadow-md hover:bg-naturalbio-verde-600 focus:outline-none focus:ring-2 focus:ring-naturalbio-verde focus:ring-opacity-75 transition-colors font-title font-semibold inline-flex items-center justify-center;
     }
-    
+
     .btn-secondary {
-        @apply py-2 px-4 bg-naturalbio-azul text-white rounded-lg shadow-md hover:bg-naturalbio-dorado focus:outline-none focus:ring-2 focus:ring-naturalbio-azul focus:ring-opacity-75 transition-colors font-title font-semibold;
+        @apply py-2 px-4 bg-naturalbio-azul text-white rounded-md shadow-md hover:bg-naturalbio-azul-600 focus:outline-none focus:ring-2 focus:ring-naturalbio-azul focus:ring-opacity-75 transition-colors font-title font-semibold inline-flex items-center justify-center;
     }
-    
+
     .btn-outline {
-        @apply py-2 px-4 border-2 border-naturalbio-verde text-naturalbio-verde rounded-lg hover:bg-naturalbio-verde hover:text-white focus:outline-none focus:ring-2 focus:ring-naturalbio-verde focus:ring-opacity-75 transition-colors font-title font-semibold;
+        @apply py-2 px-4 border border-naturalbio-verde text-naturalbio-verde bg-white rounded-md hover:bg-naturalbio-verde-50 focus:outline-none focus:ring-2 focus:ring-naturalbio-verde focus:ring-opacity-75 transition-colors font-title font-semibold inline-flex items-center justify-center;
     }
-    
+
     .btn-premium {
-        @apply py-2 px-4 bg-naturalbio-dorado text-white rounded-lg shadow-md hover:bg-naturalbio-gris focus:outline-none focus:ring-2 focus:ring-naturalbio-dorado focus:ring-opacity-75 transition-colors font-title font-semibold;
+        @apply py-2 px-4 bg-naturalbio-dorado text-gray-800 rounded-md shadow-md hover:bg-naturalbio-dorado-600 focus:outline-none focus:ring-2 focus:ring-naturalbio-dorado focus:ring-opacity-75 transition-colors font-title font-semibold inline-flex items-center justify-center;
     }
-    
-    /* Tarjetas para servicios y productos */
+
+    /* Botones planos y discretos */
+    .btn-flat {
+        @apply py-2 px-4 text-naturalbio-verde bg-naturalbio-verde-50 rounded-md hover:bg-naturalbio-verde-100 focus:outline-none focus:ring-2 focus:ring-naturalbio-verde focus:ring-opacity-75 transition-colors font-title font-semibold inline-flex items-center justify-center;
+    }
+
+    .btn-link {
+        @apply py-1 px-2 text-naturalbio-azul hover:text-naturalbio-azul-600 hover:underline focus:outline-none focus:ring-2 focus:ring-naturalbio-azul focus:ring-opacity-75 transition-colors font-title font-medium inline-flex items-center justify-center;
+    }
+
+    /* Botones responsivos */
+    .btn-full-mobile {
+        @apply w-full justify-center;
+    }
+
+    /* Botones de navegación para formularios multi-paso */
+    .btn-prev {
+        @apply py-2 px-4 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-naturalbio-azul focus:ring-opacity-50 transition-colors font-title font-medium inline-flex items-center justify-center;
+    }
+
+    .btn-prev svg {
+        @apply mr-2 h-5 w-5;
+    }
+
+    .btn-next {
+        @apply py-2 px-4 bg-naturalbio-verde text-white rounded-md shadow-sm hover:bg-naturalbio-verde-600 focus:outline-none focus:ring-2 focus:ring-naturalbio-verde focus:ring-opacity-75 transition-colors font-title font-semibold inline-flex items-center justify-center;
+    }
+
+    .btn-next svg {
+        @apply ml-2 h-5 w-5;
+    }
+
+    .btn-sm {
+        @apply py-1 px-3 text-xs;
+    }
+
+    .btn-lg {
+        @apply py-3 px-5 text-base;
+    }
+
+    .btn-icon {
+        @apply p-2 rounded-full;
+    }
+
+    /* Tarjetas rediseñadas (más modernas y limpias) */
+    .card {
+        @apply bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-shadow hover:shadow-md;
+    }
+
     .card-naturalbio {
-        @apply bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow;
+        @apply bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all;
     }
-    
+
     .card-service {
-        @apply card-naturalbio border-t-4 border-naturalbio-verde;
+        @apply card-naturalbio border-l-4 border-naturalbio-verde;
     }
-    
+
     .card-product {
-        @apply card-naturalbio border-t-4 border-naturalbio-dorado;
+        @apply card-naturalbio border-l-4 border-naturalbio-dorado;
     }
-    
+
     .card-diagnostic {
-        @apply card-naturalbio border-t-4 border-naturalbio-azul;
+        @apply card-naturalbio border-l-4 border-naturalbio-azul;
     }
-    
+
+    .card-recommendation {
+        @apply card-naturalbio border-l-4 border-naturalbio-gris;
+    }
+
+    .card-header {
+        @apply px-4 py-3 md:px-5 md:py-4 border-b border-gray-100 bg-white flex flex-col sm:flex-row justify-between items-start sm:items-center;
+    }
+
+    .card-body {
+        @apply p-4 md:p-5;
+    }
+
+    .card-footer {
+        @apply px-4 py-3 md:px-5 md:py-3 border-t border-gray-100 bg-gray-50;
+    }
+
+    /* Variantes de tarjetas */
+    .card-flat {
+        @apply border-0 shadow-none;
+    }
+
+    .card-hover {
+        @apply hover:bg-gray-50 cursor-pointer;
+    }
+
+    .card-primary {
+        @apply border-t-4 border-naturalbio-verde;
+    }
+
+    .card-secondary {
+        @apply border-t-4 border-naturalbio-azul;
+    }
+
+    .card-accent {
+        @apply border-t-4 border-naturalbio-dorado;
+    }
+
     /* Encabezados según la identidad de marca */
     .heading-primary {
         @apply text-naturalbio-verde font-title font-bold;
     }
-    
+
     .heading-secondary {
         @apply text-naturalbio-azul font-title font-semibold;
     }
-    
+
     .text-accent {
         @apply font-accent text-naturalbio-dorado;
     }
-    
+
+    /* Page title */
+    .page-title {
+        @apply text-2xl font-semibold text-gray-900 mb-6 font-title;
+    }
+
+    .page-subtitle {
+        @apply text-lg font-medium text-gray-700 mb-4 font-title;
+    }
+
     /* Contenedores específicos */
     .container-naturalbio {
         @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+
+    /* Sidebar mejoras */
+    .sidebar-wrapper {
+        @apply fixed h-full transition-all duration-300 ease-in-out;
+    }
+
+    .sidebar-expanded {
+        @apply w-64;
+    }
+
+    .sidebar-collapsed {
+        @apply w-16;
+    }
+
+    .sidebar-content {
+        @apply h-full bg-white border-r border-gray-200 shadow-lg overflow-hidden;
+    }
+
+    .sidebar-mobile {
+        @apply fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out;
+    }
+
+    .sidebar-mobile-open {
+        @apply translate-x-0;
+    }
+
+    .sidebar-mobile-closed {
+        @apply -translate-x-full;
+    }
+
+    /* Tablas responsivas */
+    .table-responsive {
+        @apply overflow-x-auto rounded-lg border border-gray-200;
+    }
+
+    .table {
+        @apply min-w-full divide-y divide-gray-200;
+    }
+
+    .table-header {
+        @apply bg-gray-50;
+    }
+
+    .table-header-cell {
+        @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+    }
+
+    .table-body {
+        @apply bg-white divide-y divide-gray-200;
+    }
+
+    .table-row {
+        @apply hover:bg-gray-50 transition-colors;
+    }
+
+    .table-row-active {
+        @apply bg-naturalbio-verde-light;
+    }
+
+    .table-cell {
+        @apply px-6 py-4 whitespace-nowrap text-sm text-gray-500;
+    }
+
+    /* Formularios estandarizados y optimizados para todas las pantallas */
+    .form-group {
+        @apply mb-6 w-full;
+    }
+
+    .form-label {
+        @apply block text-sm font-medium text-gray-700 mb-2;
+    }
+
+    .form-input {
+        @apply block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-naturalbio-verde focus:ring focus:ring-naturalbio-verde focus:ring-opacity-50;
+    }
+
+    .form-help {
+        @apply mt-1 text-sm text-gray-500;
+    }
+
+    .form-error {
+        @apply mt-1 text-sm text-red-600;
+    }
+
+    /* Contenedor de formulario mejorado */
+    .form-container {
+        @apply bg-white rounded-lg shadow-md p-6 lg:p-8 w-full max-w-4xl mx-auto;
+    }
+
+    /* Grid para formularios responsivos */
+    .form-grid {
+        @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+    }
+
+    /* Campo de texto multilinea */
+    .form-textarea {
+        @apply block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-naturalbio-verde focus:ring focus:ring-naturalbio-verde focus:ring-opacity-50 min-h-[100px];
+    }
+
+    /* Select mejorado */
+    .form-select {
+        @apply block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-naturalbio-verde focus:ring focus:ring-naturalbio-verde focus:ring-opacity-50;
+    }
+
+    /* Campos con íconos */
+    .form-input-with-icon {
+        @apply pl-10;
+    }
+
+    .form-input-icon-wrapper {
+        @apply relative;
+    }
+
+    .form-input-icon {
+        @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400;
+    }
+
+    /* Badges estandarizados */
+    .badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    }
+
+    .badge-success {
+        @apply bg-green-100 text-green-800;
+    }
+
+    .badge-warning {
+        @apply bg-yellow-100 text-yellow-800;
+    }
+
+    .badge-danger {
+        @apply bg-red-100 text-red-800;
+    }
+
+    .badge-info {
+        @apply bg-blue-100 text-blue-800;
+    }
+
+    .badge-gray {
+        @apply bg-gray-100 text-gray-800;
+    }
+
+    /* Correcciones para navegación mobile */
+    @media (max-width: 768px) {
+        .mobile-page-title {
+            max-width: 180px;
+        }
+
+        .main-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .btn-full-mobile {
+            @apply w-full flex justify-center;
+        }
+    }
+
+    /* Correcciones para tarjetas en dispositivos pequeños */
+    @media (max-width: 640px) {
+        .card-header {
+            @apply flex-col items-start;
+        }
+
+        .card-header-actions {
+            @apply mt-2 w-full;
+        }
     }
 }

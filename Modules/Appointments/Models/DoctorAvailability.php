@@ -34,8 +34,8 @@ class DoctorAvailability extends Model
      */
     protected $casts = [
         'date' => 'date',
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
+        'start_time' => 'string',  // Cambiado de datetime a string para que funcione correctamente con los formatos de tiempo
+        'end_time' => 'string',    // Cambiado de datetime a string para que funcione correctamente con los formatos de tiempo
         'recurrence_end' => 'date',
         'active' => 'boolean',
     ];

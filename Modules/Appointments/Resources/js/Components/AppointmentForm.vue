@@ -1,344 +1,442 @@
 <template>
-    <div class="appointment-form">
-      <div v-if="currentStep === 1" class="step-container">
-        <h3 class="step-title">Paso 1: Seleccionar Paciente</h3>
-        <div v-if="preselectedPatient" class="selected-patient">
-          <div class="flex items-center">
-            <div v-if="preselectedPatient.photo_path" class="mr-3">
-              <img :src="preselectedPatient.photo_path" alt="Foto del paciente" class="h-12 w-12 rounded-full object-cover" />
-            </div>
-            <div>
-              <div class="font-semibold">{{ preselectedPatient.name }} {{ preselectedPatient.last_name }}</div>
-              <div class="text-sm text-gray-600">
-                {{ preselectedPatient.expedient_number || 'Sin expediente' }}
-              </div>
+  <div class="appointment-form">
+    <!-- PASO 1: SELECCIONAR PACIENTE -->
+    <div v-if="currentStep === 1" class="step-container">
+      <h3 class="step-title">Paso 1: Seleccionar Paciente</h3>
+      
+      <!-- Paciente preseleccionado -->
+      <div v-if="preselectedPatient" class="selected-patient">
+        <div class="flex items-center">
+          <div v-if="preselectedPatient.photo_path" class="mr-3">
+            <img :src="preselectedPatient.photo_path" alt="Foto del paciente" class="h-12 w-12 rounded-full object-cover" />
+          </div>
+          <div>
+            <div class="font-semibold">{{ preselectedPatient.name }} {{ preselectedPatient.last_name }}</div>
+            <div class="text-sm text-gray-600">
+              {{ preselectedPatient.expedient_number || 'Sin expediente' }}
             </div>
           </div>
         </div>
-        <div v-else>
-          <div class="mb-4">
-            <label for="patient-search" class="block text-sm font-medium text-gray-700">Buscar paciente</label>
-            <div class="mt-1 relative">
-              <input
-                id="patient-search"
-                v-model="patientSearch"
-                class="shadow-sm focus:ring-naturalbio-verde focus:border-naturalbio-verde block w-full sm:text-sm border-gray-300 rounded-md"
-                placeholder="Buscar por nombre o expediente"
-                @input="searchPatients"
-              />
-              <div v-if="isSearching" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </div>
+      </div>
+      
+      <!-- Buscar paciente -->
+      <div v-else>
+        <div class="mb-4">
+          <label for="patient-search" class="block text-sm font-medium text-gray-700">Buscar paciente</label>
+          <div class="relative mt-1">
+            <input
+              type="text"
+              id="patient-search"
+              v-model="patientSearch"
+              @input="searchPatients"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 focus:ring-opacity-50"
+              placeholder="Nombre o número de expediente..."
+            />
+            <div v-if="isSearching" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
             </div>
           </div>
-          
-          <div v-if="patients.length > 0" class="patient-list">
-            <div
+        </div>
+        
+        <!-- Resultados de búsqueda -->
+        <div v-if="patients.length > 0" class="mt-2 max-h-60 overflow-y-auto rounded-md bg-white shadow-lg">
+          <ul class="divide-y divide-gray-200">
+            <li
               v-for="patient in patients"
               :key="patient.id"
-              class="patient-item"
-              :class="{ 'border-naturalbio-verde': selectedPatient?.id === patient.id }"
               @click="selectPatient(patient)"
+              class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
             >
-              <div class="flex items-center">
-                <div v-if="patient.photo_path" class="mr-3">
-                  <img :src="patient.photo_path" alt="Foto del paciente" class="h-10 w-10 rounded-full object-cover" />
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-semibold truncate">{{ patient.name }} {{ patient.last_name }}</div>
-                  <div class="text-sm text-gray-600">{{ patient.expedient_number || 'Sin expediente' }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div v-else-if="patientSearch && !isSearching" class="text-gray-500 text-center py-4">
-            No se encontraron pacientes. <a href="#" class="text-naturalbio-verde hover:underline" @click.prevent="goToCreatePatient">Crear nuevo paciente</a>
+              {{ patient.full_name }}
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Mensaje "no se encontraron pacientes" -->
+        <div v-else-if="patientSearch.length >= 2 && !isSearching" class="mt-2 p-4 border rounded bg-gray-50">
+          <div class="flex flex-col items-center text-center">
+            <p class="text-sm text-gray-600 mb-3">No se encontraron pacientes con esta búsqueda.</p>
+            <a
+              href="/patients/create?redirect_after=/appointments/create"
+              target="_blank"
+              onclick="window.open('/patients/create?redirect_after=/appointments/create', '_blank'); return false;"
+              class="inline-flex items-center px-4 py-2 bg-emerald-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-emerald-500 focus:outline-none focus:border-emerald-700 focus:ring focus:ring-emerald-200 active:bg-emerald-600 transition"
+            >
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Crear Nuevo Paciente
+            </a>
+            <p class="text-xs text-gray-500 mt-2">Se abrirá en una nueva pestaña. Luego regrese aquí para seleccionarlo.</p>
           </div>
         </div>
+        
+        <!-- Paciente seleccionado -->
+        <div v-if="selectedPatient" class="mt-4 p-3 border rounded-md bg-gray-50">
+          <div class="font-semibold">{{ selectedPatient.full_name }}</div>
+        </div>
       </div>
-      
-      <div v-if="currentStep === 2" class="step-container">
-        <h3 class="step-title">Paso 2: Seleccionar Doctor (Opcional)</h3>
-        <div class="mb-4">
-          <label for="doctor-select" class="block text-sm font-medium text-gray-700">Doctor</label>
-          <select
-            id="doctor-select"
-            v-model="selectedDoctor"
-            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-naturalbio-verde focus:border-naturalbio-verde sm:text-sm rounded-md"
+    </div>
+    
+    <!-- PASO 2: SELECCIONAR DOCTOR -->
+    <div v-if="currentStep === 2" class="step-container">
+      <h3 class="step-title">Paso 2: Seleccionar Doctor</h3>
+
+      <div v-if="selectedDoctor" class="mb-4">
+        <div class="flex justify-between items-center p-3 bg-emerald-50 border border-emerald-200 rounded-md">
+          <div class="flex items-center">
+            <div v-if="selectedDoctor.photo_path" class="mr-3">
+              <img :src="selectedDoctor.photo_path" alt="Foto del doctor" class="h-12 w-12 rounded-full object-cover" />
+            </div>
+            <div>
+              <div class="font-semibold text-emerald-800">Doctor Seleccionado</div>
+              <div class="font-medium">Dr. {{ selectedDoctor.name }}</div>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="text-emerald-600 hover:text-emerald-800"
+            @click="selectedDoctor = null"
           >
-            <option :value="null">Sin asignar</option>
-            <option v-for="doctor in doctors" :key="doctor.id" :value="doctor">
-              {{ doctor.name }}
-            </option>
-          </select>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       </div>
-      
-      <div v-if="currentStep === 3" class="step-container">
-        <h3 class="step-title">Paso 3: Tipo de Cita</h3>
-        <div class="grid grid-cols-2 gap-3">
-          <div
-            v-for="type in appointmentTypes"
-            :key="type.id"
-            class="appointment-type-card"
-            :class="{ 'ring-2 ring-naturalbio-verde': selectedType?.id === type.id }"
-            :style="{ borderLeftColor: type.color }"
-            @click="selectAppointmentType(type)"
+
+      <div v-if="!selectedDoctor" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+        <div
+          v-for="doctor in doctors"
+          :key="doctor.id"
+          class="border rounded-md p-3 cursor-pointer hover:bg-gray-50"
+          @click="selectDoctor(doctor)"
+        >
+          <div class="flex items-center">
+            <div v-if="doctor.photo_path" class="mr-3">
+              <img :src="doctor.photo_path" alt="Foto del doctor" class="h-10 w-10 rounded-full object-cover" />
+            </div>
+            <div>
+              <div class="font-semibold">Dr. {{ doctor.name }}</div>
+              <div class="text-sm text-gray-600">{{ doctor.specialty || 'Sin especialidad' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="doctors.length === 0" class="text-center py-4 text-gray-500">
+        No hay doctores disponibles.
+      </div>
+    </div>
+    
+    <!-- PASO 3: TIPO DE CITA -->
+    <div v-if="currentStep === 3" class="step-container">
+      <h3 class="step-title">Paso 3: Tipo de Cita</h3>
+
+      <div v-if="selectedType" class="mb-4">
+        <div class="flex justify-between items-center p-3 bg-emerald-50 border border-emerald-200 rounded-md">
+          <div class="flex items-center">
+            <div class="w-6 h-6 mr-3 rounded-full" :style="{ backgroundColor: selectedType.color || '#cccccc' }"></div>
+            <div>
+              <div class="font-semibold text-emerald-800">Tipo de Cita Seleccionado</div>
+              <div class="font-medium">{{ selectedType.name }}</div>
+              <div class="text-sm text-gray-600">
+                <span v-if="selectedType.default_duration">{{ selectedType.default_duration }} min</span>
+                <span v-if="selectedType.default_duration && selectedType.default_price"> · </span>
+                <span v-if="selectedType.default_price">Q{{ selectedType.default_price }}</span>
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="text-emerald-600 hover:text-emerald-800"
+            @click="selectedType = null"
           >
-            <div class="font-medium">{{ type.name }}</div>
-            <div class="text-sm text-gray-600">
-              <span>{{ formatPrice(type.default_price) }}</span>
-              <span class="mx-1">•</span>
-              <span>{{ type.default_duration }} min</span>
-            </div>
-          </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       </div>
-      
-      <div v-if="currentStep === 4" class="step-container">
-        <h3 class="step-title">Paso 4: Terapias</h3>
-        <div v-if="therapies.length === 0" class="text-gray-500 text-center py-4">
-          No hay terapias disponibles.
-        </div>
-        <div v-else class="space-y-3">
-          <div
-            v-for="therapy in therapies"
-            :key="therapy.id"
-            class="therapy-card"
-            :class="{ 'ring-2 ring-naturalbio-verde': isTherapySelected(therapy.id) }"
-            @click="toggleTherapy(therapy)"
-          >
-            <div class="flex items-start">
-              <div class="h-5 w-5 mr-2">
-                <input
-                  type="checkbox"
-                  :checked="isTherapySelected(therapy.id)"
-                  class="h-4 w-4 text-naturalbio-verde focus:ring-naturalbio-verde border-gray-300 rounded"
-                  @click.stop
-                  @change="toggleTherapy(therapy)"
-                />
-              </div>
-              <div class="flex-grow">
-                <div class="font-medium">{{ therapy.name }}</div>
-                <div class="text-sm text-gray-600">
-                  <span>{{ formatPrice(therapy.default_price) }}</span>
-                  <span class="mx-1">•</span>
-                  <span>{{ therapy.default_duration }} min</span>
-                </div>
-              </div>
-            </div>
-            
-            <div v-if="isTherapySelected(therapy.id)" class="mt-2 pt-2 border-t border-gray-200">
-              <div>
-                <label :for="`therapy-price-${therapy.id}`" class="block text-xs font-medium text-gray-700">Precio</label>
-                <div class="mt-1 relative rounded-md shadow-sm">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span class="text-gray-500 sm:text-sm">Q</span>
-                  </div>
-                  <input
-                    :id="`therapy-price-${therapy.id}`"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    :value="getSelectedTherapyPrice(therapy.id)"
-                    class="focus:ring-naturalbio-verde focus:border-naturalbio-verde block w-full pl-7 sm:text-sm border-gray-300 rounded-md"
-                    @input="updateTherapyPrice(therapy.id, $event.target.value)"
-                  />
-                </div>
-              </div>
-              
-              <div class="mt-2">
-                <label :for="`therapy-therapist-${therapy.id}`" class="block text-xs font-medium text-gray-700">Terapista (Opcional)</label>
-                <select
-                  :id="`therapy-therapist-${therapy.id}`"
-                  :value="getSelectedTherapyTherapist(therapy.id)"
-                  class="mt-1 block w-full pl-3 pr-10 py-1 text-sm border-gray-300 focus:outline-none focus:ring-naturalbio-verde focus:border-naturalbio-verde rounded-md"
-                  @change="updateTherapyTherapist(therapy.id, $event.target.value)"
-                >
-                  <option :value="null">Sin asignar</option>
-                  <option v-for="therapist in therapists" :key="therapist.id" :value="therapist.id">
-                    {{ therapist.name }}
-                  </option>
-                </select>
+
+      <div v-if="!selectedType" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+        <div
+          v-for="type in appointmentTypes"
+          :key="type.id"
+          class="border rounded-md p-3 cursor-pointer hover:bg-gray-50"
+          @click="selectAppointmentType(type)"
+        >
+          <div class="flex items-center">
+            <div class="w-4 h-4 mr-2 rounded-full" :style="{ backgroundColor: type.color || '#cccccc' }"></div>
+            <div>
+              <div class="font-semibold">{{ type.name }}</div>
+              <div class="text-sm text-gray-600">
+                <span v-if="type.default_duration">{{ type.default_duration }} min</span>
+                <span v-if="type.default_duration && type.default_price"> · </span>
+                <span v-if="type.default_price">Q{{ type.default_price }}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
-      <div v-if="currentStep === 5" class="step-container">
-        <h3 class="step-title">Paso 5: Fecha y Hora</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="appointment-date" class="block text-sm font-medium text-gray-700">Fecha</label>
-            <input
-              id="appointment-date"
-              type="date"
-              v-model="appointmentDate"
-              class="mt-1 focus:ring-naturalbio-verde focus:border-naturalbio-verde block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-              :min="today"
-              @change="loadAvailability"
-            />
-          </div>
-          
-          <div>
-            <label for="appointment-time" class="block text-sm font-medium text-gray-700">Hora</label>
-            <div class="mt-1">
-              <div v-if="loadingAvailability" class="flex items-center justify-center py-2 text-sm text-gray-500">
-                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-naturalbio-verde" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+
+      <div v-if="appointmentTypes.length === 0" class="text-center py-4 text-gray-500">
+        No hay tipos de cita disponibles.
+      </div>
+    </div>
+    
+    <!-- PASO 4: SELECCIONAR TERAPIAS -->
+    <div v-if="currentStep === 4" class="step-container">
+      <h3 class="step-title">Paso 4: Seleccionar Terapias</h3>
+
+      <!-- Terapias seleccionadas -->
+      <div v-if="selectedTherapies.length > 0" class="mb-4">
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-md">
+          <div class="font-semibold text-emerald-800 mb-2">Terapias Seleccionadas ({{ selectedTherapies.length }})</div>
+          <div class="flex flex-wrap gap-2">
+            <div
+              v-for="therapy in selectedTherapies"
+              :key="therapy.id"
+              class="flex items-center bg-white border border-emerald-300 rounded-full px-3 py-1"
+            >
+              <span class="text-sm mr-2">{{ therapy.name }}</span>
+              <button
+                @click.stop="toggleTherapy(therapy)"
+                class="text-emerald-600 hover:text-emerald-800 focus:outline-none"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                Cargando disponibilidad...
-              </div>
-              
-              <div v-else-if="availableSlots.length === 0 && selectedDoctor">
-                <div class="text-sm text-red-600">
-                  No hay horarios disponibles para el doctor seleccionado en esta fecha.
-                </div>
-              </div>
-              
-              <div v-else-if="!selectedDoctor">
-                <input
-                  id="appointment-time"
-                  type="time"
-                  v-model="appointmentTime"
-                  class="focus:ring-naturalbio-verde focus:border-naturalbio-verde block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                />
-              </div>
-              
-              <div v-else class="grid grid-cols-3 gap-2">
-                <button
-                  v-for="slot in availableSlots"
-                  :key="`${slot.start}-${slot.end}`"
-                  type="button"
-                  class="time-slot-btn"
-                  :class="{ 'bg-naturalbio-verde text-white': appointmentTime === slot.start }"
-                  @click="selectTimeSlot(slot)"
-                >
-                  {{ slot.start }}
-                </button>
-              </div>
+              </button>
             </div>
-          </div>
-          
-          <div class="md:col-span-2">
-            <label for="appointment-duration" class="block text-sm font-medium text-gray-700">Duración (minutos)</label>
-            <input
-              id="appointment-duration"
-              type="number"
-              v-model.number="appointmentDuration"
-              min="1"
-              class="mt-1 focus:ring-naturalbio-verde focus:border-naturalbio-verde block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-            />
           </div>
         </div>
       </div>
-      
-      <div v-if="currentStep === 6" class="step-container">
-        <h3 class="step-title">Paso 6: Notas</h3>
+
+      <!-- Lista de terapias disponibles -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+        <div
+          v-for="therapy in therapies"
+          :key="therapy.id"
+          class="border rounded-md p-3 cursor-pointer hover:bg-gray-50 transition-all"
+          :class="{ 'ring-2 ring-emerald-500 bg-emerald-50': isTherapySelected(therapy.id) }"
+          @click="toggleTherapy(therapy)"
+        >
+          <div class="flex items-center">
+            <div class="flex-grow">
+              <div class="font-semibold">{{ therapy.name }}</div>
+              <div class="text-sm text-gray-600">
+                {{ therapy.description && therapy.description.length > 60 ? therapy.description.slice(0, 60) + '...' : therapy.description }}
+              </div>
+              <div class="mt-1 text-xs text-gray-500 flex gap-2">
+                <span v-if="therapy.default_duration">{{ therapy.default_duration }} min</span>
+                <span v-if="therapy.default_price">Q{{ therapy.default_price }}</span>
+              </div>
+            </div>
+            <div class="ml-2">
+              <div class="w-6 h-6 rounded-full flex items-center justify-center" :class="isTherapySelected(therapy.id) ? 'bg-emerald-500' : 'bg-gray-200'">
+                <svg v-if="isTherapySelected(therapy.id)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="therapies.length === 0" class="text-center py-8 bg-gray-50 rounded-md border border-gray-200 mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        <p class="text-gray-600">No hay terapias disponibles.</p>
+        <p class="text-sm text-gray-500 mt-1">Las terapias deben ser configuradas por un administrador.</p>
+      </div>
+    </div>
+    
+    <!-- PASO 5: PROGRAMAR FECHA Y HORA -->
+    <div v-if="currentStep === 5" class="step-container">
+      <h3 class="step-title">Paso 5: Programar Fecha y Hora</h3>
+
+      <div class="bg-emerald-50 border border-emerald-200 rounded-md p-4 mb-6">
+        <div class="text-sm text-emerald-800">
+          <p><strong>Importante:</strong> Seleccione la fecha y hora para la cita.</p>
+          <p class="mt-1">La duración predeterminada se basa en el tipo de cita seleccionado.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
         <div>
-          <label for="appointment-notes" class="block text-sm font-medium text-gray-700">Notas para la cita</label>
+          <label for="appointment-date" class="block text-sm font-medium text-gray-700">Fecha <span class="text-red-500">*</span></label>
+          <input
+            type="date"
+            id="appointment-date"
+            v-model="appointmentDate"
+            :min="today"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 focus:ring-opacity-50"
+          />
+          <p v-if="!appointmentDate" class="mt-1 text-sm text-red-600">Este campo es obligatorio</p>
+        </div>
+
+        <div>
+          <label for="appointment-time" class="block text-sm font-medium text-gray-700">Hora <span class="text-red-500">*</span></label>
+          <input
+            type="time"
+            id="appointment-time"
+            v-model="appointmentTime"
+            step="300"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 focus:ring-opacity-50"
+          />
+          <p v-if="!appointmentTime" class="mt-1 text-sm text-red-600">Este campo es obligatorio</p>
+          <div class="mt-2 flex flex-wrap gap-2">
+            <button
+              v-for="time in ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00']"
+              type="button"
+              :key="time"
+              class="px-2 py-1 text-xs border rounded-md"
+              :class="appointmentTime === time ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'"
+              @click="appointmentTime = time"
+            >
+              {{ time }}
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label for="appointment-duration" class="block text-sm font-medium text-gray-700">Duración (minutos) <span class="text-red-500">*</span></label>
+          <div class="mt-1 flex items-center">
+            <input
+              type="number"
+              id="appointment-duration"
+              v-model.number="appointmentDuration"
+              min="5"
+              step="5"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 focus:ring-opacity-50"
+            />
+            <div class="ml-2 flex flex-wrap gap-1">
+              <button
+                v-for="duration in [15, 30, 45, 60]"
+                type="button"
+                :key="duration"
+                class="px-2 py-1 text-xs border rounded-md"
+                :class="appointmentDuration === duration ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'"
+                @click="appointmentDuration = duration"
+              >
+                {{ duration }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PASO 6: CONFIRMAR CITA -->
+    <div v-if="currentStep === 6" class="step-container">
+      <h3 class="step-title">Paso 6: Confirmar Cita</h3>
+      
+      <div class="bg-gray-50 p-4 rounded-md mt-4">
+        <dl class="divide-y divide-gray-200">
+          <div class="grid grid-cols-3 gap-4 py-3">
+            <dt class="text-sm font-medium text-gray-500">Paciente</dt>
+            <dd class="text-sm font-medium text-gray-900 col-span-2">
+              {{ selectedPatient ? selectedPatient.full_name : 'No seleccionado' }}
+            </dd>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-4 py-3">
+            <dt class="text-sm font-medium text-gray-500">Doctor</dt>
+            <dd class="text-sm font-medium text-gray-900 col-span-2">
+              {{ selectedDoctor ? `Dr. ${selectedDoctor.name}` : 'No seleccionado' }}
+            </dd>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-4 py-3">
+            <dt class="text-sm font-medium text-gray-500">Tipo de Cita</dt>
+            <dd class="text-sm font-medium text-gray-900 col-span-2">
+              {{ selectedType ? selectedType.name : 'No seleccionado' }}
+            </dd>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-4 py-3">
+            <dt class="text-sm font-medium text-gray-500">Terapias</dt>
+            <dd class="text-sm font-medium text-gray-900 col-span-2">
+              <span v-if="selectedTherapies.length === 0">No seleccionadas</span>
+              <ul v-else class="list-disc pl-5">
+                <li v-for="therapy in selectedTherapies" :key="therapy.id">{{ therapy.name }}</li>
+              </ul>
+            </dd>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-4 py-3">
+            <dt class="text-sm font-medium text-gray-500">Fecha y Hora</dt>
+            <dd class="text-sm font-medium text-gray-900 col-span-2">
+              {{ appointmentDate }} {{ appointmentTime }}
+            </dd>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-4 py-3">
+            <dt class="text-sm font-medium text-gray-500">Duración</dt>
+            <dd class="text-sm font-medium text-gray-900 col-span-2">{{ appointmentDuration }} minutos</dd>
+          </div>
+        </dl>
+        
+        <div class="mt-4">
+          <label for="appointment-notes" class="block text-sm font-medium text-gray-700">Notas</label>
           <textarea
             id="appointment-notes"
             v-model="appointmentNotes"
-            rows="4"
-            class="mt-1 focus:ring-naturalbio-verde focus:border-naturalbio-verde block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-            placeholder="Agregue cualquier nota relevante para esta cita..."
+            rows="3"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 focus:ring-opacity-50"
+            placeholder="Añadir notas o instrucciones..."
           ></textarea>
         </div>
-        
-        <div class="mt-6">
-          <h4 class="font-medium text-gray-700">Resumen de la Cita</h4>
-          <div class="mt-2 bg-gray-50 rounded-md p-3">
-            <dl class="divide-y divide-gray-200">
-              <div class="py-2 grid grid-cols-3">
-                <dt class="text-sm font-medium text-gray-500">Paciente</dt>
-                <dd class="text-sm text-gray-900 col-span-2">{{ selectedPatient?.name }} {{ selectedPatient?.last_name }}</dd>
-              </div>
-              <div class="py-2 grid grid-cols-3">
-                <dt class="text-sm font-medium text-gray-500">Doctor</dt>
-                <dd class="text-sm text-gray-900 col-span-2">{{ selectedDoctor?.name || 'Sin asignar' }}</dd>
-              </div>
-              <div class="py-2 grid grid-cols-3">
-                <dt class="text-sm font-medium text-gray-500">Tipo</dt>
-                <dd class="text-sm text-gray-900 col-span-2">{{ selectedType?.name || 'Sin tipo' }}</dd>
-              </div>
-              <div class="py-2 grid grid-cols-3">
-                <dt class="text-sm font-medium text-gray-500">Terapias</dt>
-                <dd class="text-sm text-gray-900 col-span-2">
-                  <span v-if="selectedTherapies.length === 0">Sin terapias</span>
-                  <ul v-else class="list-disc pl-5">
-                    <li v-for="therapy in selectedTherapies" :key="therapy.id">
-                      {{ therapy.name }} ({{ formatPrice(therapy.price) }})
-                    </li>
-                  </ul>
-                </dd>
-              </div>
-              <div class="py-2 grid grid-cols-3">
-                <dt class="text-sm font-medium text-gray-500">Fecha y Hora</dt>
-                <dd class="text-sm text-gray-900 col-span-2">
-                  {{ formatAppointmentDateTime() }}
-                </dd>
-              </div>
-              <div class="py-2 grid grid-cols-3">
-                <dt class="text-sm font-medium text-gray-500">Duración</dt>
-                <dd class="text-sm text-gray-900 col-span-2">{{ appointmentDuration }} minutos</dd>
-              </div>
-              <div class="py-2 grid grid-cols-3">
-                <dt class="text-sm font-medium text-gray-500">Precio Total</dt>
-                <dd class="text-sm font-medium text-naturalbio-verde col-span-2">{{ formatPrice(calculateTotalPrice()) }}</dd>
-              </div>
-            </dl>
-          </div>
-        </div>
-      </div>
-      
-      <div class="flex justify-between mt-8">
-        <button
-          v-if="currentStep > 1"
-          type="button"
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-naturalbio-verde"
-          @click="prevStep"
-        >
-          Atrás
-        </button>
-        <div v-else></div>
-        
-        <button
-          v-if="currentStep < 6"
-          type="button"
-          class="px-4 py-2 text-sm font-medium text-white bg-naturalbio-verde border border-transparent rounded-md shadow-sm hover:bg-naturalbio-verde-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-naturalbio-verde"
-          @click="nextStep"
-          :disabled="!canProceed"
-        >
-          Siguiente
-        </button>
-        <button
-          v-else
-          type="button"
-          class="px-4 py-2 text-sm font-medium text-white bg-naturalbio-verde border border-transparent rounded-md shadow-sm hover:bg-naturalbio-verde-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-naturalbio-verde"
-          @click="submitForm"
-        >
-          Crear Cita
-        </button>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, computed, onMounted, watch } from 'vue';
-  import { format } from 'date-fns';
-  import { es } from 'date-fns/locale';
-  import { router } from '@inertiajs/vue3';
-  import axios from 'axios';
-  
-  const props = defineProps({
-    appointmentTypes: {
+    
+    <!-- BOTONES DE NAVEGACIÓN -->
+    <div class="flex justify-between mt-8">
+      <button
+        v-if="currentStep > 1"
+        type="button"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-naturalbio-verde"
+        @click="prevStep"
+      >
+        Atrás
+      </button>
+      <div v-else></div>
+      
+      <button
+        v-if="currentStep < 6"
+        type="button"
+        class="px-4 py-2 text-sm font-medium text-white bg-naturalbio-verde border border-transparent rounded-md shadow-sm hover:bg-naturalbio-verde-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-naturalbio-verde"
+        @click="goToNextStep"
+        :disabled="!canProceed"
+      >
+        Siguiente
+      </button>
+      
+      <button
+        v-else
+        type="button"
+        class="px-4 py-2 text-sm font-medium text-white bg-naturalbio-verde border border-transparent rounded-md shadow-sm hover:bg-naturalbio-verde-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-naturalbio-verde"
+        @click="submitAppointment"
+      >
+        Guardar Cita
+      </button>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, computed, onMounted } from 'vue';
+import { format } from 'date-fns';
+import axios from 'axios';
+
+export default {
+  props: {
+    patients: {
       type: Array,
       default: () => []
     },
@@ -346,7 +444,7 @@
       type: Array,
       default: () => []
     },
-    therapists: {
+    appointmentTypes: {
       type: Array,
       default: () => []
     },
@@ -354,281 +452,269 @@
       type: Array,
       default: () => []
     },
+    therapists: {
+      type: Array,
+      default: () => []
+    },
     preselectedPatient: {
       type: Object,
       default: null
     },
+    preselectedDoctor: {
+      type: Object,
+      default: null
+    },
+    preselectedType: {
+      type: Object,
+      default: null
+    },
+    appointmentId: {
+      type: Number,
+      default: null
+    },
     defaultDate: {
       type: String,
-      default: () => format(new Date(), 'yyyy-MM-dd')
+      default: ''
     }
-  });
+  },
   
-  const emit = defineEmits(['submit']);
+  emits: ['submit', 'cancel'],
   
-  // Estado del formulario
-  const currentStep = ref(1);
-  const patientSearch = ref('');
-  const patients = ref([]);
-  const isSearching = ref(false);
-  const selectedPatient = ref(null);
-  const selectedDoctor = ref(null);
-  const selectedType = ref(null);
-  const selectedTherapies = ref([]);
-  const appointmentDate = ref(props.defaultDate);
-  const appointmentTime = ref('');
-  const appointmentDuration = ref(60);
-  const appointmentNotes = ref('');
-  const availableSlots = ref([]);
-  const loadingAvailability = ref(false);
-  
-  // Computed properties
-  const today = computed(() => {
-    return format(new Date(), 'yyyy-MM-dd');
-  });
-  
-  const canProceed = computed(() => {
-    switch (currentStep.value) {
-      case 1:
-        return !!selectedPatient.value;
-      case 2:
-        return true; // Doctor es opcional
-      case 3:
-        return true; // Tipo es opcional
-      case 4:
-        return true; // Terapias son opcionales
-      case 5:
-        return !!appointmentDate.value && !!appointmentTime.value && appointmentDuration.value > 0;
-      default:
-        return true;
-    }
-  });
-  
-  // Métodos
-  function searchPatients() {
-    if (patientSearch.value.length < 2) {
-      patients.value = [];
-      return;
-    }
+  setup(props, { emit }) {
+    // Estado del formulario
+    const currentStep = ref(1);
+    const patientSearch = ref('');
+    const patients = ref([]);
+    const isSearching = ref(false);
     
-    isSearching.value = true;
+    // Valores seleccionados
+    const selectedPatient = ref(props.preselectedPatient || null);
+    const selectedDoctor = ref(props.preselectedDoctor || null);
+    const selectedType = ref(props.preselectedType || null);
+    const selectedTherapies = ref([]);
     
-    axios.get(route('api.patients.search', {
-      search: patientSearch.value
-    }))
-      .then(response => {
-        patients.value = response.data.patients;
-      })
-      .catch(error => {
-        console.error('Error al buscar pacientes:', error);
-      })
-      .finally(() => {
-        isSearching.value = false;
-      });
-  }
-  
-  function selectPatient(patient) {
-    selectedPatient.value = patient;
-  }
-  
-  function selectAppointmentType(type) {
-    selectedType.value = type;
-    appointmentDuration.value = type.default_duration || 60;
-  }
-  
-  function toggleTherapy(therapy) {
-    const index = selectedTherapies.value.findIndex(t => t.id === therapy.id);
+    // Detalles de la cita
+    const appointmentDate = ref('');
+    const appointmentTime = ref('');
+    const appointmentDuration = ref(60);
+    const appointmentNotes = ref('');
     
-    if (index >= 0) {
-      selectedTherapies.value.splice(index, 1);
-    } else {
-      selectedTherapies.value.push({
-        id: therapy.id,
-        name: therapy.name,
-        price: therapy.default_price || 0,
-        duration: therapy.default_duration || 30,
-        therapist_id: null
-      });
-    }
-  }
-  
-  function isTherapySelected(therapyId) {
-    return selectedTherapies.value.some(therapy => therapy.id === therapyId);
-  }
-  
-  function getSelectedTherapyPrice(therapyId) {
-    const therapy = selectedTherapies.value.find(t => t.id === therapyId);
-    return therapy ? therapy.price : 0;
-  }
-  
-  function getSelectedTherapyTherapist(therapyId) {
-    const therapy = selectedTherapies.value.find(t => t.id === therapyId);
-    return therapy ? therapy.therapist_id : null;
-  }
-  
-  function updateTherapyPrice(therapyId, price) {
-    const therapy = selectedTherapies.value.find(t => t.id === therapyId);
-    if (therapy) {
-      therapy.price = parseFloat(price) || 0;
-    }
-  }
-  
-  function updateTherapyTherapist(therapyId, therapistId) {
-    const therapy = selectedTherapies.value.find(t => t.id === therapyId);
-    if (therapy) {
-      therapy.therapist_id = therapistId ? parseInt(therapistId) : null;
-    }
-  }
-  
-  function loadAvailability() {
-    if (!selectedDoctor.value || !appointmentDate.value) {
-      availableSlots.value = [];
-      return;
-    }
+    // Log de datos para depuración
+    console.log('Datos iniciales:');
+    console.log('- Doctores:', props.doctors);
+    console.log('- Tipos de cita:', props.appointmentTypes);
+    console.log('- Terapias:', props.therapies);
     
-    loadingAvailability.value = true;
+    // Computed properties
+    const today = computed(() => {
+      return format(new Date(), 'yyyy-MM-dd');
+    });
     
-    axios.get(route('api.appointments.availability'), {
-      params: {
-        doctor_id: selectedDoctor.value.id,
-        date: appointmentDate.value,
-        duration: appointmentDuration.value
+    const canProceed = computed(() => {
+      switch (currentStep.value) {
+        case 1:
+          return !!selectedPatient.value;
+        case 2:
+          return true; // Doctor es opcional
+        case 3:
+          return true; // Tipo es opcional
+        case 4:
+          return true; // Terapias son opcionales
+        case 5:
+          return !!appointmentDate.value && !!appointmentTime.value && appointmentDuration.value > 0;
+        default:
+          return true;
       }
-    })
-      .then(response => {
-        availableSlots.value = response.data.slots || [];
-        
-        // Resetear tiempo seleccionado si no está disponible
-        if (appointmentTime.value && !availableSlots.value.some(slot => slot.start === appointmentTime.value)) {
-          appointmentTime.value = '';
-        }
-      })
-      .catch(error => {
-        console.error('Error al cargar disponibilidad:', error);
-        availableSlots.value = [];
-      })
-      .finally(() => {
-        loadingAvailability.value = false;
-      });
-  }
-  
-  function selectTimeSlot(slot) {
-    appointmentTime.value = slot.start;
-  }
-  
-  function calculateTotalPrice() {
-    const typePrice = selectedType.value ? selectedType.value.default_price || 0 : 0;
-    const therapiesPrice = selectedTherapies.value.reduce((sum, therapy) => sum + (therapy.price || 0), 0);
+    });
     
-    return typePrice + therapiesPrice;
-  }
-  
-  function formatPrice(price) {
-    return `Q ${parseFloat(price || 0).toFixed(2)}`;
-  }
-  
-  function formatAppointmentDateTime() {
-    if (!appointmentDate.value || !appointmentTime.value) {
-      return 'No especificado';
-    }
-    
-    const dateObj = new Date(`${appointmentDate.value}T${appointmentTime.value}`);
-    
-    return format(dateObj, 'EEEE, d MMMM yyyy HH:mm', { locale: es });
-  }
-  
-  function nextStep() {
-    if (currentStep.value < 6 && canProceed.value) {
-      currentStep.value++;
+    // Métodos
+    function searchPatients() {
+      if (patientSearch.value.length < 2) {
+        patients.value = [];
+        return;
+      }
       
-      // Cargar disponibilidad al llegar al paso 5
-      if (currentStep.value === 5) {
-        loadAvailability();
+      isSearching.value = true;
+      
+      axios.get(`/api/patients/search?search=${encodeURIComponent(patientSearch.value)}`)
+        .then(response => {
+          console.log('Respuesta de búsqueda:', response.data);
+          patients.value = response.data.patients || [];
+        })
+        .catch(error => {
+          console.error('Error en búsqueda:', error);
+          patients.value = [];
+        })
+        .finally(() => {
+          isSearching.value = false;
+        });
+    }
+    
+    function selectPatient(patient) {
+      console.log('Seleccionando paciente:', patient);
+      selectedPatient.value = patient;
+    }
+    
+    function selectDoctor(doctor) {
+      console.log('Seleccionando doctor:', doctor);
+      selectedDoctor.value = doctor;
+    }
+    
+    function selectAppointmentType(type) {
+      console.log('Seleccionando tipo de cita:', type);
+      selectedType.value = type;
+      appointmentDuration.value = type.default_duration || 60;
+    }
+    
+    function toggleTherapy(therapy) {
+      console.log('Toggling terapia:', therapy);
+      const index = selectedTherapies.value.findIndex(t => t.id === therapy.id);
+      
+      if (index >= 0) {
+        selectedTherapies.value.splice(index, 1);
+      } else {
+        selectedTherapies.value.push(therapy);
       }
     }
-  }
-  
-  function prevStep() {
-    if (currentStep.value > 1) {
-      currentStep.value--;
-    }
-  }
-  
-  function goToCreatePatient() {
-    router.visit(route('patients.create'));
-  }
-  
-  function submitForm() {
-    const startDateTime = new Date(`${appointmentDate.value}T${appointmentTime.value}`);
     
-    const formData = {
-      patient_id: selectedPatient.value.id,
-      doctor_id: selectedDoctor.value ? selectedDoctor.value.id : null,
-      appointment_type_id: selectedType.value ? selectedType.value.id : null,
-      start_time: startDateTime.toISOString(),
-      duration: appointmentDuration.value,
-      notes: appointmentNotes.value,
-      therapies: selectedTherapies.value.map(therapy => ({
-        id: therapy.id,
-        price: therapy.price,
-        duration: therapy.duration,
-        therapist_id: therapy.therapist_id
-      }))
+    function isTherapySelected(therapyId) {
+      return selectedTherapies.value.some(t => t.id === therapyId);
+    }
+    
+    function goToNextStep() {
+      console.log('Avanzando al siguiente paso desde:', currentStep.value);
+      if (currentStep.value < 6 && canProceed.value) {
+        currentStep.value++;
+      }
+    }
+    
+    function prevStep() {
+      console.log('Retrocediendo al paso anterior desde:', currentStep.value);
+      if (currentStep.value > 1) {
+        currentStep.value--;
+      }
+    }
+    
+    function submitAppointment() {
+      console.log('Enviando formulario de cita');
+
+      // Crear fecha y hora combinada para start_time
+      const startDateTime = appointmentDate.value && appointmentTime.value
+        ? `${appointmentDate.value}T${appointmentTime.value}`
+        : null;
+
+      const formData = {
+        patient_id: selectedPatient.value?.id,
+        doctor_id: selectedDoctor.value?.id,
+        appointment_type_id: selectedType.value?.id,
+        therapies: selectedTherapies.value.map(t => ({
+          id: t.id,
+          price: t.default_price || 0,
+          duration: t.default_duration || 30
+        })),
+        start_time: startDateTime, // Campo combinado para backend
+        // Mantenemos date y time para frontend
+        date: appointmentDate.value,
+        time: appointmentTime.value,
+        duration: appointmentDuration.value,
+        notes: appointmentNotes.value,
+      };
+
+      if (props.appointmentId) {
+        formData.id = props.appointmentId;
+      }
+
+      console.log('Datos de la cita a enviar:', formData);
+      emit('submit', formData);
+    }
+    
+    // Inicialización
+    onMounted(() => {
+      console.log('Componente montado');
+      console.log('Datos recibidos:');
+      console.log('- Doctores:', props.doctors.length, 'items');
+      console.log('- Tipos de cita:', props.appointmentTypes.length, 'items');
+      console.log('- Terapias:', props.therapies.length, 'items');
+      console.log('- Terapeutas:', props.therapists.length, 'items');
+
+      // Inicializar fecha
+      appointmentDate.value = props.defaultDate || format(new Date(), 'yyyy-MM-dd');
+
+      // Inicializar hora predeterminada (9:00 AM)
+      appointmentTime.value = '09:00';
+
+      // Si hay preselecciones, avanza los pasos automáticamente
+      if (props.preselectedPatient) {
+        selectedPatient.value = props.preselectedPatient;
+      }
+
+      if (props.preselectedDoctor) {
+        selectedDoctor.value = props.preselectedDoctor;
+      }
+
+      if (props.preselectedType) {
+        selectedType.value = props.preselectedType;
+        appointmentDuration.value = props.preselectedType.default_duration || 60;
+      }
+    });
+    
+    return {
+      // Estado y valores seleccionados
+      currentStep,
+      patientSearch,
+      patients,
+      isSearching,
+      selectedPatient,
+      selectedDoctor,
+      selectedType,
+      selectedTherapies,
+      
+      // Detalles de la cita
+      appointmentDate,
+      appointmentTime,
+      appointmentDuration,
+      appointmentNotes,
+      
+      // Propiedades calculadas
+      today,
+      canProceed,
+      
+      // Métodos
+      searchPatients,
+      selectPatient,
+      selectDoctor,
+      selectAppointmentType,
+      toggleTherapy,
+      isTherapySelected,
+      goToNextStep,
+      prevStep,
+      submitAppointment
     };
-    
-    emit('submit', formData);
   }
-  
-  // Watchers
-  watch(() => props.preselectedPatient, (newVal) => {
-    if (newVal) {
-      selectedPatient.value = newVal;
-    }
-  }, { immediate: true });
-  
-  watch([selectedDoctor, appointmentDate, appointmentDuration], () => {
-    loadAvailability();
-  });
-  
-  onMounted(() => {
-    // Si hay un paciente preseleccionado, avanzar al paso 2
-    if (props.preselectedPatient) {
-      selectedPatient.value = props.preselectedPatient;
-      nextStep();
-    }
-  });
-  </script>
-  
-  <style scoped>
-  .step-container {
-    @apply space-y-4;
-  }
-  
-  .step-title {
-    @apply text-lg font-medium text-gray-900 mb-4;
-  }
-  
-  .selected-patient {
-    @apply p-4 border border-gray-300 rounded-md;
-  }
-  
-  .patient-list {
-    @apply divide-y divide-gray-200 max-h-64 overflow-y-auto border border-gray-300 rounded-md;
-  }
-  
-  .patient-item {
-    @apply p-3 hover:bg-gray-50 cursor-pointer border-l-4 border-transparent;
-  }
-  
-  .appointment-type-card {
-    @apply p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 border-l-4;
-  }
-  
-  .therapy-card {
-    @apply p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50;
-  }
-  
-  .time-slot-btn {
-    @apply py-2 px-1 text-center text-sm border border-gray-300 rounded-md hover:bg-gray-100;
-  }
-  </style>
+};
+</script>
+
+<style>
+.step-container {
+  margin-bottom: 1rem;
+}
+
+.step-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.bg-naturalbio-verde {
+  background-color: #247868;
+}
+
+.bg-naturalbio-verde-700 {
+  background-color: #1d5f54;
+}
+
+.ring-naturalbio-verde {
+  --tw-ring-color: #247868;
+}
+</style>

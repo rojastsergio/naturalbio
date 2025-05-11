@@ -1,226 +1,408 @@
 <template>
-    <div class="availability-calendar">
-      <div class="mb-4 flex flex-col sm:flex-row justify-between items-center">
-        <div class="flex items-center mb-4 sm:mb-0">
-          <button
-            class="bg-naturalbio-verde text-white p-2 rounded"
-            @click="previousMonth"
+  <div class="availability-calendar bg-white p-4 rounded-lg shadow-sm">
+    <div class="mb-4 flex justify-between items-center">
+      <h3 class="text-lg font-medium text-naturalbio-verde">Calendario de Disponibilidad</h3>
+      
+      <div class="flex items-center gap-4">
+        <!-- Selector de vistas -->
+        <div class="bg-gray-100 inline-flex rounded-lg p-1">
+          <button 
+            @click="changeView('timeGridDay')" 
+            :class="[
+              'px-3 py-1 text-sm font-medium rounded-md',
+              currentView === 'timeGridDay' 
+                ? 'bg-white text-naturalbio-verde shadow-sm' 
+                : 'text-gray-500 hover:text-naturalbio-verde'
+            ]"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            Día
           </button>
-          <span class="mx-4 text-lg font-semibold">{{ currentMonthName }} {{ currentYear }}</span>
-          <button
-            class="bg-naturalbio-verde text-white p-2 rounded"
-            @click="nextMonth"
+          <button 
+            @click="changeView('timeGridWeek')" 
+            :class="[
+              'px-3 py-1 text-sm font-medium rounded-md',
+              currentView === 'timeGridWeek' 
+                ? 'bg-white text-naturalbio-verde shadow-sm' 
+                : 'text-gray-500 hover:text-naturalbio-verde'
+            ]"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            Semana
+          </button>
+          <button 
+            @click="changeView('dayGridMonth')" 
+            :class="[
+              'px-3 py-1 text-sm font-medium rounded-md',
+              currentView === 'dayGridMonth' 
+                ? 'bg-white text-naturalbio-verde shadow-sm' 
+                : 'text-gray-500 hover:text-naturalbio-verde'
+            ]"
+          >
+            Mes
           </button>
         </div>
         
+        <!-- Botón nueva disponibilidad -->
         <button
-          class="bg-naturalbio-verde text-white px-4 py-2 rounded"
+          class="bg-naturalbio-verde text-white px-4 py-2 rounded-md flex items-center"
           @click="$emit('new-availability')"
         >
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
           Nueva Disponibilidad
         </button>
       </div>
-      
-      <div class="grid grid-cols-7 text-center font-medium bg-gray-100 dark:bg-gray-700 rounded-t-md">
-        <div v-for="day in weekDays" :key="day" class="py-2">
-          {{ day }}
-        </div>
-      </div>
-      
-      <div class="grid grid-cols-7 border border-gray-200 dark:border-gray-600 rounded-b-md">
-        <div
-          v-for="(day, index) in days"
-          :key="index"
-          class="border border-gray-200 dark:border-gray-600 min-h-[100px] p-1"
-          :class="{
-            'bg-gray-100 dark:bg-gray-700': !day.isCurrentMonth,
-            'bg-naturalbio-verde bg-opacity-10': day.isToday,
-          }"
-        >
-          <div class="flex justify-between items-center">
-            <span
-              class="text-sm font-semibold"
-              :class="{
-                'text-naturalbio-verde': day.isToday,
-                'text-gray-400 dark:text-gray-500': !day.isCurrentMonth,
-              }"
-            >
-              {{ day.number }}
-            </span>
-            <button
-              v-if="day.isCurrentMonth"
-              class="text-naturalbio-verde hover:text-naturalbio-verde-dark text-xs p-1"
-              @click="$emit('add-time-slot', day.date)"
-            >
-              +
-            </button>
-          </div>
-          
-          <div v-if="day.availabilities && day.availabilities.length > 0" class="mt-1">
-            <div
-              v-for="(availability, i) in day.availabilities"
-              :key="i"
-              class="bg-naturalbio-verde text-white text-xs p-1 rounded mb-1 truncate"
-              @click="$emit('edit-availability', availability)"
-            >
-              {{ formatTime(availability.start_time) }} - {{ formatTime(availability.end_time) }}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </template>
+    
+    <div id="availability-calendar" class="calendar-container"></div>
+  </div>
+</template>
+
+<script>
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+
+export default {
+  props: {
+    availabilities: {
+      type: Array,
+      required: true
+    },
+    appointments: {
+      type: Array,
+      default: () => []
+    },
+    initialView: {
+      type: String,
+      default: 'timeGridWeek'
+    },
+    allowEditing: {
+      type: Boolean,
+      default: true
+    }
+  },
   
-  <script>
-  export default {
-    props: {
-      availabilities: {
-        type: Array,
-        required: true
-      }
-    },
-    data() {
-      return {
-        currentDate: new Date(),
-        weekDays: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
-      }
-    },
-    computed: {
-      currentYear() {
-        return this.currentDate.getFullYear();
-      },
-      currentMonth() {
-        return this.currentDate.getMonth();
-      },
-      currentMonthName() {
-        return new Date(this.currentYear, this.currentMonth, 1).toLocaleString('es', { month: 'long' });
-      },
-      days() {
-        const days = [];
+  emits: [
+    'new-availability', 
+    'edit-availability', 
+    'delete-availability', 
+    'availability-create',
+    'month-changed'
+  ],
+  
+  data() {
+    return {
+      calendar: null,
+      currentView: this.initialView,
+    };
+  },
+  
+  computed: {
+    calendarEvents() {
+      // Convertir disponibilidades al formato de eventos de FullCalendar
+      const availabilityEvents = this.availabilities.map(availability => {
+        // Asegurarse de que la fecha y hora están en el formato correcto
+        const startStr = this.formatDateTime(availability.date, availability.start_time);
+        const endStr = this.formatDateTime(availability.date, availability.end_time);
         
-        // Primer día del mes actual
-        const firstDay = new Date(this.currentYear, this.currentMonth, 1);
-        // Último día del mes actual
-        const lastDay = new Date(this.currentYear, this.currentMonth + 1, 0);
-        
-        // Días del mes anterior para completar la primera semana
-        const prevMonthLastDay = new Date(this.currentYear, this.currentMonth, 0).getDate();
-        const firstDayOfWeek = firstDay.getDay(); // 0 = Sunday, 1 = Monday, ...
-        
-        for (let i = firstDayOfWeek - 1; i >= 0; i--) {
-          const date = new Date(this.currentYear, this.currentMonth - 1, prevMonthLastDay - i);
-          days.push({
-            number: prevMonthLastDay - i,
-            isCurrentMonth: false,
-            isToday: this.isToday(date),
-            date: this.formatDate(date),
-            availabilities: this.getAvailabilitiesForDate(date)
-          });
-        }
-        
-        // Días del mes actual
-        for (let i = 1; i <= lastDay.getDate(); i++) {
-          const date = new Date(this.currentYear, this.currentMonth, i);
-          days.push({
-            number: i,
-            isCurrentMonth: true,
-            isToday: this.isToday(date),
-            date: this.formatDate(date),
-            availabilities: this.getAvailabilitiesForDate(date)
-          });
-        }
-        
-        // Días del próximo mes para completar la última semana
-        const remainingDays = 7 - (days.length % 7);
-        if (remainingDays < 7) {
-          for (let i = 1; i <= remainingDays; i++) {
-            const date = new Date(this.currentYear, this.currentMonth + 1, i);
-            days.push({
-              number: i,
-              isCurrentMonth: false,
-              isToday: this.isToday(date),
-              date: this.formatDate(date),
-              availabilities: this.getAvailabilitiesForDate(date)
-            });
+        return {
+          id: `avail_${availability.id}`,
+          title: 'Disponible',
+          start: startStr,
+          end: endStr,
+          backgroundColor: '#4CAF50', // Verde - Disponible
+          borderColor: '#4CAF50',
+          textColor: '#FFFFFF',
+          extendedProps: {
+            type: 'availability',
+            originalData: availability
           }
-        }
+        };
+      });
+      
+      // Convertir citas al formato de eventos de FullCalendar (si se proporcionan)
+      const appointmentEvents = this.appointments.map(appointment => {
+        return {
+          id: `appt_${appointment.id}`,
+          title: appointment.patient ? `Cita: ${appointment.patient.name}` : 'Cita sin paciente',
+          start: appointment.start_time,
+          end: appointment.end_time,
+          backgroundColor: '#FBC02D', // Dorado - Ocupado
+          borderColor: '#FBC02D',
+          textColor: '#333333',
+          extendedProps: {
+            type: 'appointment',
+            originalData: appointment
+          }
+        };
+      });
+      
+      // Combinar ambos tipos de eventos
+      return [...availabilityEvents, ...appointmentEvents];
+    }
+  },
+  
+  watch: {
+    availabilities: {
+      handler() {
+        this.updateCalendarEvents();
+      },
+      deep: true
+    },
+    
+    appointments: {
+      handler() {
+        this.updateCalendarEvents();
+      },
+      deep: true
+    }
+  },
+  
+  mounted() {
+    this.initializeCalendar();
+  },
+  
+  beforeUnmount() {
+    if (this.calendar) {
+      this.calendar.destroy();
+    }
+  },
+  
+  methods: {
+    initializeCalendar() {
+      // Asegurar que los estilos de FullCalendar estén cargados
+      this.loadFullCalendarStyles();
+      
+      const calendarEl = document.getElementById('availability-calendar');
+      if (!calendarEl) return;
+      
+      this.calendar = new Calendar(calendarEl, {
+        plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+        initialView: this.currentView,
+        locale: 'es',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: '' // Ocultamos los controles de vista predeterminados
+        },
+        events: this.calendarEvents,
+        nowIndicator: true,
+        allDaySlot: false,
+        slotDuration: '00:15:00',
+        slotLabelFormat: {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        },
+        eventTimeFormat: {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        },
         
-        return days;
+        // Manejo de eventos
+        eventClick: this.handleEventClick,
+        
+        // Para creación de disponibilidades mediante selección
+        selectable: this.allowEditing,
+        select: this.handleDateSelect,
+        
+        // Permitir arrastrar y redimensionar eventos
+        editable: this.allowEditing,
+        eventResize: this.handleEventResize,
+        eventDrop: this.handleEventDrop,
+        
+        // Cambio de fecha
+        datesSet: (info) => {
+          const startDate = new Date(info.start);
+          const formattedDate = startDate.toISOString().split('T')[0];
+          this.$emit('month-changed', formattedDate);
+        },
+        
+        // Personalizaciones visuales
+        eventContent: this.renderEventContent
+      });
+      
+      this.calendar.render();
+    },
+    
+    loadFullCalendarStyles() {
+      // Si el CSS de FullCalendar no está ya cargado, lo añadimos
+      if (!document.getElementById('fullcalendar-styles')) {
+        const link = document.createElement('link');
+        link.id = 'fullcalendar-styles';
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css';
+        document.head.appendChild(link);
       }
     },
-    methods: {
-      previousMonth() {
-        this.currentDate = new Date(this.currentYear, this.currentMonth - 1, 1);
-        this.$emit('month-changed', this.formatDate(this.currentDate));
-      },
-      nextMonth() {
-        this.currentDate = new Date(this.currentYear, this.currentMonth + 1, 1);
-        this.$emit('month-changed', this.formatDate(this.currentDate));
-      },
-      isToday(date) {
-        const today = new Date();
-        return date.getDate() === today.getDate() &&
-          date.getMonth() === today.getMonth() &&
-          date.getFullYear() === today.getFullYear();
-      },
-      formatDate(date) {
-        return date.toISOString().split('T')[0]; // YYYY-MM-DD
-      },
-      formatTime(time) {
-        if (!time) return '';
-        
-        // Si es un objeto Date o un string ISO
-        if (time instanceof Date || (typeof time === 'string' && time.includes('T'))) {
-          const date = new Date(time);
-          return date.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
-        }
-        
-        // Si es solo un string de hora (HH:MM:SS)
-        if (typeof time === 'string' && time.includes(':')) {
-          return time.substring(0, 5); // HH:MM
-        }
-        
-        return time;
-      },
-      getAvailabilitiesForDate(date) {
-        const dateStr = this.formatDate(date);
-        return this.availabilities.filter(a => {
-          const availabilityDate = a.date instanceof Date 
-            ? this.formatDate(a.date) 
-            : a.date;
-          return availabilityDate === dateStr;
-        });
+    
+    updateCalendarEvents() {
+      if (this.calendar) {
+        this.calendar.removeAllEvents();
+        this.calendar.addEventSource(this.calendarEvents);
       }
+    },
+    
+    changeView(viewName) {
+      this.currentView = viewName;
+      if (this.calendar) {
+        this.calendar.changeView(viewName);
+      }
+    },
+    
+    formatDateTime(date, time) {
+      // Convertir fecha y hora a un string ISO para FullCalendar
+      if (!date || !time) return '';
+      
+      // Si ya es un objeto Date o un string ISO completo, devolvemos como está
+      if (time instanceof Date || (typeof time === 'string' && time.includes('T'))) {
+        return time;
+      }
+      
+      // Combinar fecha y hora
+      return `${date}T${time}`;
+    },
+    
+    handleEventClick(info) {
+      const eventData = info.event.extendedProps.originalData;
+      const eventType = info.event.extendedProps.type;
+      
+      if (eventType === 'availability') {
+        // Solo permitimos editar disponibilidades, no citas
+        this.$emit('edit-availability', eventData);
+      }
+    },
+    
+    handleDateSelect(info) {
+      if (!this.allowEditing) return;
+      
+      // Cuando el usuario selecciona un rango de tiempo, crear una nueva disponibilidad
+      const availabilityData = {
+        date: info.start.toISOString().split('T')[0],
+        start_time: info.start.toISOString().split('T')[1].substring(0, 8),
+        end_time: info.end.toISOString().split('T')[1].substring(0, 8)
+      };
+      
+      this.$emit('availability-create', availabilityData);
+      this.calendar.unselect(); // Deshacer la selección
+    },
+    
+    handleEventResize(info) {
+      if (info.event.extendedProps.type !== 'availability') return;
+      
+      const updatedAvailability = {
+        ...info.event.extendedProps.originalData,
+        date: info.event.start.toISOString().split('T')[0],
+        start_time: info.event.start.toISOString().split('T')[1].substring(0, 8),
+        end_time: info.event.end.toISOString().split('T')[1].substring(0, 8)
+      };
+      
+      this.$emit('edit-availability', updatedAvailability);
+    },
+    
+    handleEventDrop(info) {
+      if (info.event.extendedProps.type !== 'availability') return;
+      
+      const updatedAvailability = {
+        ...info.event.extendedProps.originalData,
+        date: info.event.start.toISOString().split('T')[0],
+        start_time: info.event.start.toISOString().split('T')[1].substring(0, 8),
+        end_time: info.event.end.toISOString().split('T')[1].substring(0, 8)
+      };
+      
+      this.$emit('edit-availability', updatedAvailability);
+    },
+    
+    renderEventContent(info) {
+      const eventType = info.event.extendedProps.type;
+      
+      // Personalizar el aspecto de los eventos según su tipo
+      if (eventType === 'availability') {
+        return {
+          html: `
+            <div class="fc-event-main-content">
+              <div class="flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>${this.formatTimeRange(info.event.start, info.event.end)}</span>
+              </div>
+            </div>
+          `
+        };
+      } else if (eventType === 'appointment') {
+        return {
+          html: `
+            <div class="fc-event-main-content">
+              <div class="flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>${info.event.title}</span>
+              </div>
+            </div>
+          `
+        };
+      }
+      
+      return null;
+    },
+    
+    formatTimeRange(start, end) {
+      const startTime = start.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+      const endTime = end.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+      return `${startTime} - ${endTime}`;
     }
   }
-  </script>
+};
+</script>
+
+<style scoped>
+.availability-calendar {
+  width: 100%;
+}
+
+.calendar-container {
+  height: 600px;
+}
+
+/* Personalización adicional para adaptarse al estilo de NaturalBIO */
+:deep(.fc-button-primary) {
+  background-color: #247868 !important;
+  border-color: #247868 !important;
+}
+
+:deep(.fc-button-primary:hover) {
+  background-color: #1d5f54 !important;
+  border-color: #1d5f54 !important;
+}
+
+:deep(.fc-button-active) {
+  background-color: #1d5f54 !important;
+  border-color: #1d5f54 !important;
+}
+
+:deep(.fc-today-button) {
+  background-color: #247868 !important;
+  border-color: #247868 !important;
+}
+
+:deep(.fc-col-header-cell) {
+  background-color: #f3f4f6;
+}
+
+:deep(.fc-day-today) {
+  background-color: rgba(36, 120, 104, 0.1) !important;
+}
+
+:deep(.fc-timegrid-now-indicator-line) {
+  border-color: #FBC02D !important;
+}
+
+:deep(.fc-timegrid-now-indicator-arrow) {
+  border-color: #FBC02D !important;
+}
+</style>

@@ -50,8 +50,13 @@ Route::middleware([
 
     // Rutas para el módulo de Pacientes (implementadas a través de PatientController)
     Route::get('/patients', [\Modules\Patients\Controllers\PatientController::class, 'index'])->name('patients.index');
+    // Ruta en inglés que debe tener el mismo nombre que la ruta en español para no romper los enlaces
     Route::get('/patients/create', [\Modules\Patients\Controllers\PatientController::class, 'create'])->name('patients.create');
     Route::post('/patients', [\Modules\Patients\Controllers\PatientController::class, 'store'])->name('patients.store');
+
+    // Ruta para búsqueda de pacientes (sin middleware de permisos)
+    Route::get('/patients/search', [\Modules\Patients\Controllers\PatientController::class, 'search'])->name('patients.search');
+
     Route::get('/patients/{patient}', [\Modules\Patients\Controllers\PatientController::class, 'show'])->name('patients.show');
     Route::get('/patients/{patient}/edit', [\Modules\Patients\Controllers\PatientController::class, 'edit'])->name('patients.edit');
     Route::put('/patients/{patient}', [\Modules\Patients\Controllers\PatientController::class, 'update'])->name('patients.update');

@@ -4,7 +4,8 @@ namespace Modules\Doctors\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log; // Añadida esta línea
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Modules\Doctors\Models\Doctor;
 use Modules\Doctors\Services\DoctorService;
@@ -168,11 +169,18 @@ class DoctorController extends Controller
      */
     public function dashboard(Request $request)
     {
+        // Verificar si el usuario tiene el rol de doctor
+        if (!Auth::user()->hasRole('doctor')) {
+            return redirect()->route('doctors.index')
+                ->with('error', 'Acceso denegado: No tienes el rol de doctor asignado. Contacta al administrador para solicitar el acceso.');
+        }
+        
         $doctor = $this->doctorService->getCurrentDoctor();
         
         if (!$doctor) {
+            // Si el usuario tiene el rol pero no tiene perfil, algo salió mal
             return redirect()->route('doctors.index')
-                ->with('error', 'No tienes un perfil de doctor configurado.');
+                ->with('error', 'Error en la configuración de tu perfil de doctor. Contacta al soporte técnico.');
         }
 
         $dashboardData = $this->doctorService->getDashboardData($doctor);
@@ -180,6 +188,45 @@ class DoctorController extends Controller
         return Inertia::render('Doctors/Dashboard', [
             'doctor' => $doctor,
             'dashboardData' => $dashboardData,
+        ]);
+    }
+
+    /**
+     * Mostrar la página de gestión de emergencias.
+     */
+    public function emergency(Request $request)
+    {
+        // Verificar si el usuario tiene el rol de doctor
+        if (!Auth::user()->hasRole('doctor')) {
+            return redirect()->route('doctors.index')
+                ->with('error', 'Acceso denegado: No tienes el rol de doctor asignado. Contacta al administrador para solicitar el acceso.');
+        }
+        
+        $doctor = $this->doctorService->getCurrentDoctor();
+        
+        if (!$doctor) {
+            return redirect()->route('doctors.index')
+                ->with('error', 'Error en la configuración de tu perfil de doctor. Contacta al soporte técnico.');
+        }
+
+        // Obtener los tipos de citas marcados como emergencia
+        $appointmentTypes = \Modules\Appointments\Models\AppointmentType::forClinic($doctor->clinic_id)
+            ->where(function($query) {
+                $query->emergency()
+                      ->orWhere('name', 'like', '%emergencia%');
+            })
+            ->get();
+
+        if ($appointmentTypes->isEmpty()) {
+            // Si no hay tipos de cita específicos para emergencias, traer todos
+            $appointmentTypes = \Modules\Appointments\Models\AppointmentType::forClinic($doctor->clinic_id)
+                ->active()
+                ->get();
+        }
+
+        return Inertia::render('Doctors/Emergency', [
+            'doctor' => $doctor,
+            'appointmentTypes' => $appointmentTypes,
         ]);
     }
 }

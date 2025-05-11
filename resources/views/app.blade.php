@@ -13,10 +13,39 @@
 
         <!-- Scripts y Styles -->
         @if (app()->environment('production'))
-            <!-- Estilos para producción -->
-            <link rel="stylesheet" href="{{ asset('assets/app-BPm-YtUm.css') }}">
-            <!-- Scripts para producción -->
-            <script type="module" src="{{ asset('assets/app-CKnLOSKh.js') }}"></script>
+            @php
+                $manifestPath = public_path('build/manifest.json');
+                $cssFile = null;
+                $jsFile = null;
+                
+                if (file_exists($manifestPath)) {
+                    $manifest = json_decode(file_get_contents($manifestPath), true);
+                    if (isset($manifest['resources/js/app.js'])) {
+                        $cssFiles = $manifest['resources/js/app.js']['css'] ?? [];
+                        $jsFile = 'build/' . ($manifest['resources/js/app.js']['file'] ?? '');
+                        if (!empty($cssFiles)) {
+                            $cssFile = 'build/' . $cssFiles[0];
+                        }
+                    }
+                }
+                
+                // Fallback a los archivos que sabemos que existen en el servidor
+                if (empty($cssFile) && file_exists(public_path('build/assets/app-Db9GbNfH.css'))) {
+                    $cssFile = 'build/assets/app-Db9GbNfH.css';
+                }
+                
+                if (empty($jsFile) && file_exists(public_path('build/assets/app-2m5xOVGx.js'))) {
+                    $jsFile = 'build/assets/app-2m5xOVGx.js';
+                }
+            @endphp
+            
+            @if($cssFile)
+                <link rel="stylesheet" href="{{ asset($cssFile) }}">
+            @endif
+            
+            @if($jsFile)
+                <script type="module" src="{{ asset($jsFile) }}"></script>
+            @endif
         @else
             <!-- Usar Vite en desarrollo -->
             @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])

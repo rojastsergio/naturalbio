@@ -5,7 +5,7 @@ import path from 'path';
 
 export default defineConfig({
     // Base para el subdirectorio en producción
-    base: '/naturalbiosolutions/build/',
+    base: '/build/',
     
     build: {
         // Target para compatibilidad con navegadores

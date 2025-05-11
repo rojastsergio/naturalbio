@@ -17,7 +17,8 @@ class DoctorAvailabilityController extends Controller
     {
         $this->availabilityService = $availabilityService;
         $this->middleware('auth');
-        $this->middleware('permission:manage availabilities');
+        // Solo aplicar el middleware de permisos a ciertas acciones que requieren privilegios adicionales
+        $this->middleware('permission:manage availabilities', ['only' => ['store', 'update', 'destroy']]);
     }
 
     /**
@@ -27,18 +28,30 @@ class DoctorAvailabilityController extends Controller
 {
     if (!$doctor) {
         $doctor = $this->availabilityService->getCurrentDoctor();
-        
+
         if (!$doctor) {
             return redirect()->route('doctors.index')
                 ->with('error', 'No tienes un perfil de doctor configurado.');
         }
     }
 
+    // Obtener disponibilidades
     $availabilities = $this->availabilityService->getAvailabilities($doctor, $request);
+
+    // Obtener citas del doctor
+    $startDate = $request->start_date ?? now()->startOfMonth()->format('Y-m-d');
+    $endDate = $request->end_date ?? now()->endOfMonth()->format('Y-m-d');
+
+    $appointments = \Modules\Appointments\Models\Appointment::where('doctor_id', $doctor->id)
+        ->whereDate('start_time', '>=', $startDate)
+        ->whereDate('start_time', '<=', $endDate)
+        ->with('patient.user')
+        ->get();
 
     return Inertia::render('Doctors/Availability', [
         'doctor' => $doctor,
         'availabilities' => $availabilities,
+        'appointments' => $appointments,
         'filters' => $request->only(['start_date', 'end_date']),
     ]);
 }
