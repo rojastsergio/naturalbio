@@ -22,3 +22,8 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+**/.claude/settings.local.json
+# Archivos temporales y específicos del entorno
+*.tar.gz
+assign-doctor-role.php
