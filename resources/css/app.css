@@ -372,3 +372,5 @@ html, body {
 }
 /* Importar las mejoras responsivas */
 @import './responsive-fixes.css';
+/* Importar optimizaciones simples para desktop */
+@import './simple-desktop.css';

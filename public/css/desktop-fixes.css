@@ -1,0 +1,38 @@
+/* Correcciones específicas para escritorio */
+@media (min-width: 1280px) {
+  /* Reducir espaciado vertical en pantallas grandes */
+  .py-6 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+  
+  /* Reducir margen inferior de las tarjetas */
+  .mb-6 {
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Optimizar el padding de contenedores de tarjetas */
+  .p-4, .p-6, .sm\:p-6 {
+    padding: 1rem !important;
+  }
+  
+  /* Ajustar el espaciado del contenido principal */
+  .container-app {
+    max-width: 95% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* Ajustes para pantallas extra grandes */
+@media (min-width: 1536px) {
+  .container-app {
+    max-width: 98% !important;
+  }
+  
+  /* Reducir todavía más el espaciado vertical */
+  .py-6, .py-8 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+}

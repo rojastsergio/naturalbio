@@ -333,10 +333,9 @@ const closeMobileSidebar = () => {
         <!-- Contenido principal optimizado para todos los tamaños de pantalla -->
         <div
             :class="[
-                'transition-all duration-300 min-h-screen overflow-y-auto main-content relative z-30',
+                'transition-all duration-300 min-h-screen overflow-y-auto overflow-x-hidden main-content relative z-30',
                 sidebarCollapsed ? 'md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16' : 'md:ml-64 lg:ml-64 xl:ml-64 2xl:ml-64',
                 'ml-0 pl-0', // Sin márgenes ni padding en móviles
-                'w-full', // Asegurar ancho completo
             ]"
         >
             <!-- Navbar mejorado con mejor soporte para móviles -->
@@ -482,16 +481,15 @@ const closeMobileSidebar = () => {
                             </div>
                         </div>
 
-                        <!-- Hamburger para menú de usuario en móvil - Mejora de accesibilidad -->
+                        <!-- Botón de perfil/usuario en móvil -->
                         <div class="flex items-center sm:hidden">
                             <button
                                 class="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-naturalbio-verde-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-30 transition-all"
                                 @click="showingNavigationDropdown = !showingNavigationDropdown"
                                 aria-label="Menú de usuario"
                             >
-                                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                    <path :class="{'hidden': showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown}" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                                    <path :class="{'hidden': !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown}" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </button>
                         </div>
@@ -585,10 +583,10 @@ const closeMobileSidebar = () => {
                 </div>
             </header>
 
-            <!-- Page Content - Optimizado para todos los tamaños de pantalla -->
+            <!-- Page Content - Restaurando al diseño original -->
             <main class="flex-1 overflow-y-auto bg-gray-100">
-                <div class="py-3 sm:py-4 md:py-5 lg:py-6 xl:py-8">
-                    <div class="container-app">
+                <div class="py-3 sm:py-4 md:py-5 lg:py-6">
+                    <div class="container-app mx-auto px-4 sm:px-6 lg:px-8">
                         <!-- Contenido principal -->
                         <slot />
                     </div>
@@ -597,7 +595,7 @@ const closeMobileSidebar = () => {
 
             <!-- Footer Mejorado -->
             <footer class="bg-white py-3 sm:py-4 px-4 border-t border-gray-200 shadow-inner">
-                <div class="container-app text-center text-gray-600 text-sm">
+                <div class="w-full text-center text-gray-600 text-sm">
                     <p>&copy; {{ new Date().getFullYear() }} NaturalBIO Solutions. Todos los derechos reservados.</p>
                 </div>
             </footer>
@@ -660,7 +658,7 @@ html, body {
     pointer-events: auto;
 }
 
-/* Estilos de contenedor simplificados */
+/* Estilos de contenedor optimizados para todos los tamaños */
 .container-app {
     width: 100%;
     max-width: 1680px;
@@ -673,6 +671,20 @@ html, body {
 @media (max-width: 640px) {
     .container-app {
         padding: 0 0.5rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .container-app {
+        max-width: 90%;
+        padding: 0 1.5rem;
+    }
+}
+
+@media (min-width: 1536px) {
+    .container-app {
+        max-width: 95%;
+        padding: 0 2rem;
     }
 }
 

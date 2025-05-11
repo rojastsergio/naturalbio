@@ -1,0 +1,66 @@
+/* Correcciones específicas para problemas de tablas y scroll horizontal */
+
+/* Prevenir desbordamiento horizontal en elementos principales */
+html, body, main, .min-h-screen, .main-content {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+/* Correcciones para tablas */
+.table-responsive, .overflow-x-auto {
+  max-width: 100% !important;
+  width: 100% !important;
+  overflow-x: visible !important; /* Prevenir scroll horizontal */
+}
+
+.data-table, table {
+  width: 100% !important;
+  table-layout: auto !important; /* Mejorar distribución de columnas */
+}
+
+/* Permitir que el texto en celdas haga wrap */
+td, th {
+  white-space: normal !important;
+  word-break: break-word !important;
+  max-width: 200px !important; /* Limitar ancho de columnas grandes */
+}
+
+/* Optimizar columna de acciones */
+td:last-child, th:last-child {
+  width: auto !important;
+  white-space: nowrap !important; /* Mantener botones de acción en una línea */
+}
+
+/* Correcciones para grids y tarjetas */
+.grid {
+  display: grid !important;
+  width: 100% !important;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+}
+
+/* Correcciones para calendarios */
+.fc, .fc-view, .fc-view-container, .fc-view > table {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Asegurar que los botones de acción no causan desbordamiento */
+.flex, .inline-flex, .actions, .btn-group {
+  flex-wrap: wrap !important;
+}
+
+/* Correcciones específicas para componentes que podrían causar scroll */
+.card, .bg-white, .shadow, .shadow-sm {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Media query para pantallas grandes */
+@media (min-width: 1280px) {
+  .container-app, .max-w-7xl {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}

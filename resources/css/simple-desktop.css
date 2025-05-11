@@ -1,0 +1,47 @@
+/* Ajustes sencillos para pantallas grandes */
+
+@media (min-width: 1280px) {
+  /* Contenedor principal más ancho */
+  .container-app {
+    max-width: 1440px !important;
+  }
+  
+  /* Reducir espaciado vertical */
+  .py-6, .py-8 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+  
+  /* Optimizar distribución de grids */
+  .grid-cols-1, .grid-cols-2, .grid-cols-3 {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container-app {
+    max-width: 1600px !important;
+  }
+}
+
+/* Asegurar que tablas usen ancho completo */
+table, .table-responsive, .overflow-x-auto {
+  width: 100% !important;
+  overflow-x: visible !important;
+}
+
+/* Permitir que el texto en celdas haga wrap */
+td, th {
+  white-space: normal !important;
+}
+
+/* Solucionar elementos FullCalendar */
+.fc, .fc-view-container, .fc-view, .fc-view > table {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Prevenir scroll horizontal */
+html, body, .min-h-screen, .main-content, main {
+  overflow-x: hidden !important;
+}

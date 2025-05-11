@@ -1,0 +1,33 @@
+/* Solución inline con máxima especificidad para sobrescribir cualquier estilo */
+
+html body div.min-h-screen div.transition-all div.py-3 div.container-app {
+  max-width: 95% !important;
+  width: 95% !important;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+html body div.min-h-screen main.flex-1 div.py-3 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+@media (min-width: 1280px) {
+  /* Target directo a elementos con clase bg-white que suelen ser tarjetas */
+  html body .bg-white {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* Ajustar el relleno de cualquier tarjeta o contenedor */
+  html body .p-6, html body .p-4, html body div[class*="p-"] {
+    padding: 0.75rem !important;
+  }
+}
+
+/* Forzar estilos en pantallas extra grandes */
+@media (min-width: 1536px) {
+  html body div.min-h-screen div.transition-all div.py-3 div.container-app {
+    max-width: 97% !important;
+    width: 97% !important;
+  }
+}

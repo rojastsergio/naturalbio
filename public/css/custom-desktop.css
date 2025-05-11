@@ -1,0 +1,63 @@
+/* Ajustes directos para forzar estilos en pantallas grandes */
+
+@media (min-width: 1280px) {
+  /* Contenedor principal más ancho */
+  .container-app, div[class*="container"] {
+    max-width: 95% !important;
+    width: 95% !important;
+  }
+  
+  /* Reducir espaciado vertical excesivo */
+  .py-6, .py-8, .py-5, .py-4 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  .px-6, .px-8 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* Contenido de tarjetas más compacto */
+  .card, [class*="card-"], .shadow-sm, .shadow, .bg-white {
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Ajustar espaciado interno de componentes */
+  .p-6, .p-4, .sm\:p-6, .md\:p-6, .lg\:p-6 {
+    padding: 1rem !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  /* Contenedor extra ancho para 2xl */
+  .container-app, div[class*="container"] {
+    max-width: 98% !important;
+    width: 98% !important;
+  }
+  
+  /* Ajustes más agresivos para pantallas muy grandes */
+  .py-6, .py-8, .py-5, .py-4, .py-3 {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+}
+
+/* Correctivo directo para sobrescribir todos los estilos */
+.max-w-7xl {
+  max-width: none !important;
+}
+
+main.flex-1 > div > div {
+  max-width: 95% !important;
+  width: 95% !important;
+}
+
+/* Ajustes para tablas y grids */
+.data-table th, .data-table td {
+  padding: 0.5rem 0.75rem !important;
+}
+
+.grid-cols-1, .grid-cols-2, .grid-cols-3 {
+  gap: 0.75rem !important;
+}

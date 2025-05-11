@@ -1,0 +1,87 @@
+/**
+ * Solución absoluta para forzar el ancho completo en todo el sitio
+ * Sin restricciones de ningún tipo
+ */
+
+/* Selector muy específico para apuntar a la raíz del layout */
+html body > div, 
+html body div.min-h-screen,
+html body div.min-h-screen > div,
+html body div.min-h-screen > div > div,
+html body div.min-h-screen > div > div > div {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Contenedores comunes y sus variaciones */
+.container, 
+.container-fluid, 
+.container-app, 
+.container-xl, 
+.container-lg,
+.content-container,
+.max-w-7xl, 
+.max-w-6xl, 
+.max-w-5xl, 
+.max-w-4xl,
+[class*="container-"],
+[class*="max-w-"] {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Contenido principal */
+main, 
+.main-content, 
+.flex-1,
+main > div,
+main > div > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+/* Tablas y contenedores que pueden causar scroll */
+table,
+.table-responsive,
+.overflow-x-auto,
+.data-table {
+  width: 100% !important;
+  max-width: 100% !important;
+  table-layout: auto !important;
+  overflow-x: visible !important;
+}
+
+/* Estilos de celdas de tabla */
+td, th {
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* Calendarios */
+.fc,
+.fc-view-container,
+.fc-view,
+.fc-view > table {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Grids */
+.grid {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+}
+
+/* Prevención de scroll horizontal */
+body, html, .min-h-screen, main, .main-content {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}

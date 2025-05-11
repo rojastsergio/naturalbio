@@ -1,0 +1,71 @@
+/**
+ * Solución para expandir los contenedores de contenido en pantallas grandes
+ * Elimina scroll horizontal innecesario y aprovecha el espacio de la pantalla
+ */
+
+/* Forzar contenedores a ancho completo en pantallas grandes */
+@media (min-width: 768px) {
+  /* Todos los contenedores principales a ancho completo */
+  .container, .container-app, .container-fluid, 
+  .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* Forzar tablas y calendarios a ancho completo */
+  table, .fc, .fc-view-container, .fc-view, .fc-view > table,
+  .table-responsive, .overflow-x-auto, .overflow-x-scroll {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: visible !important;
+  }
+  
+  /* Forzar cells para ajustar text y evitar desbordamiento */
+  td, th {
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+  
+  /* Corregir contenedores de grid */
+  .grid {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Corregir cualquier contenedor con clase que incluya "container" */
+  [class*="container"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Ajustes específicos para FullCalendar */
+.fc-view-container, .fc-view, .fc-view > table,
+.fc-day-grid-container, .fc-time-grid-container,
+.fc-scroller, .fc-day-grid, .fc-time-grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+/* Eliminar cualquier padding o margen excesivo */
+.p-8, .p-6, .p-4,
+.px-8, .px-6, .px-4,
+.py-8, .py-6, .py-4 {
+  padding: 1rem !important;
+}
+
+/* Restringir el padding del contenedor principal */
+.main-content, main {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Asegurar que el contenido principal no se desborde */
+body, html, .main-content, main, .min-h-screen {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}

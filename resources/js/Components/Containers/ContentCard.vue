@@ -28,9 +28,9 @@ defineProps({
 </script>
 
 <template>
-    <div 
+    <div
         :class="[
-            'bg-white overflow-hidden transition-shadow duration-200 rounded-lg mb-6',
+            'bg-white overflow-hidden transition-shadow duration-200 rounded-lg mb-6 w-full',
             flat ? 'border border-gray-200' : elevated ? 'shadow-md' : 'shadow-sm border border-gray-200'
         ]"
     >
@@ -62,7 +62,7 @@ defineProps({
         </div>
 
         <!-- Content -->
-        <div v-else-if="$slots.default" :class="[noPadding ? 'p-0' : 'p-4 sm:p-6']">
+        <div v-else-if="$slots.default" :class="[noPadding ? 'p-0' : 'p-4 sm:p-6 xl:p-5']">
             <slot></slot>
         </div>
 

@@ -11,6 +11,48 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- Solución simple para optimizar espacio en pantallas grandes -->
+        <style>
+            @media (min-width: 1280px) {
+                /* Contenedor principal más ancho */
+                .container-app {
+                    max-width: 1440px !important;
+                }
+
+                /* Reducir padding vertical */
+                .py-6, .py-8 {
+                    padding-top: 1.5rem !important;
+                    padding-bottom: 1.5rem !important;
+                }
+
+                /* Optimizar distribución de grids */
+                .grid-cols-1, .grid-cols-2, .grid-cols-3 {
+                    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+                }
+            }
+
+            @media (min-width: 1536px) {
+                .container-app {
+                    max-width: 1600px !important;
+                }
+            }
+
+            /* Asegurar que tablas usen ancho completo */
+            table, .table-responsive {
+                width: 100% !important;
+            }
+
+            /* Permitir que el texto en celdas haga wrap */
+            td, th {
+                white-space: normal !important;
+            }
+
+            /* Prevenir scroll horizontal */
+            html, body {
+                overflow-x: hidden !important;
+            }
+        </style>
+
         <!-- Scripts y Styles -->
         @if (app()->environment('production'))
             @php

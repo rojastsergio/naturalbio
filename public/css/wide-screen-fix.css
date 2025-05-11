@@ -1,0 +1,82 @@
+/* Optimización específica para pantallas grandes 
+   Enfocado en eliminar scroll horizontal innecesario */
+
+@media (min-width: 1280px) {
+  /* 1. Expandir el contenedor principal para usar todo el ancho disponible */
+  .container-app, .max-w-7xl {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+  
+  /* 2. Optimizar tablas para que usen el ancho completo */
+  .data-table, table {
+    width: 100% !important;
+  }
+  
+  /* 3. Mejorar distribución de grids (para tarjetas de citas) */
+  .grid-cols-1, .grid-cols-2, .grid-cols-3 {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+    width: 100% !important;
+  }
+  
+  /* 4. Asegurar que las tarjetas de contenido usen el ancho completo */
+  .content-card, .card, .bg-white {
+    width: 100% !important;
+  }
+  
+  /* 5. Corregir el layout del calendario */
+  .fc-view-container, .fc {
+    width: 100% !important;
+  }
+  
+  /* 6. Ajustar el listado de pacientes */
+  .table-responsive {
+    width: 100% !important;
+    overflow-x: visible !important; /* Evitar scroll horizontal */
+  }
+  
+  /* 7. Reducir columnas muy anchas en tablas */
+  td, th {
+    max-width: 200px !important;
+    white-space: normal !important; /* Permitir que el texto haga wrap */
+  }
+  
+  /* 8. Optimizar columna de acciones en tablas */
+  td:last-child, th:last-child {
+    width: auto !important;
+    min-width: 120px !important;
+  }
+  
+  /* 9. Mejorar uso de espacio para calendarios y planificadores */
+  .fc-view, .fc-view > table {
+    width: 100% !important;
+  }
+}
+
+/* Correcciones específicas para elementos que causarían scroll horizontal */
+@media (min-width: 1024px) {
+  /* Asegurar que no hay overflow en el contenedor principal */
+  .main-content {
+    overflow-x: hidden !important;
+  }
+  
+  /* Permitir que las tablas responsivas se muestren completamente */
+  .overflow-x-auto {
+    overflow-x: visible !important;
+  }
+  
+  /* Corregir específicamente las tablas de datos */
+  .table-responsive {
+    display: block !important;
+    width: 100% !important;
+    overflow-x: visible !important;
+  }
+}
+
+/* Solución específica para la vista de calendario */
+.fc-view-container, .fc-view, .fc-view > table {
+  width: 100% !important;
+  max-width: 100% !important;
+}

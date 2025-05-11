@@ -1,0 +1,117 @@
+/* NaturalBIO - Desktop Optimizations
+=============================================
+Este archivo contiene optimizaciones específicas para mejorar la 
+visualización en pantallas grandes y dispositivos desktop.
+*/
+
+/* Optimizaciones para pantallas grandes */
+@media (min-width: 1280px) {
+  /* Ajustar el contenedor principal para usar más espacio horizontal */
+  .container-app {
+    max-width: 95% !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+  
+  /* Reducir el espaciado vertical excesivo */
+  main.flex-1 {
+    padding-top: 1rem !important;
+  }
+  
+  /* Ajustar espaciado en tarjetas de contenido */
+  .py-6 {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+  
+  /* Optimizar el espacio entre elementos */
+  .mb-6 {
+    margin-bottom: 1.5rem !important;
+  }
+  
+  /* Mejorar la distribución de grids en pantallas grandes */
+  .grid-cols-1, .grid-cols-2, .grid-cols-3 {
+    gap: 1.5rem !important;
+  }
+}
+
+/* Optimizaciones para pantallas extra grandes */
+@media (min-width: 1536px) {
+  /* Aumentar aún más el ancho máximo */
+  .container-app {
+    max-width: 95% !important;
+  }
+  
+  /* Ajustar layout principal */
+  .main-content {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* Reducir el espacio entre elementos del header y contenido */
+  header + main {
+    padding-top: 1rem !important;
+  }
+  
+  /* Mejorar el uso del espacio en contenedores de contenido */
+  .px-6 {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+}
+
+/* Optimizar espaciado de elementos en el layout principal */
+@media (min-width: 1024px) {
+  /* Reducir el espacio entre la barra de navegación y el contenido */
+  .py-3, .sm\:py-4, .md\:py-5, .lg\:py-6, .xl\:py-8 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+  
+  /* Ajustar tarjetas para aprovechar mejor el espacio */
+  .p-4, .sm\:p-6 {
+    padding: 1.25rem !important;
+  }
+  
+  /* Optimizar tamaños de fuente para mejor legibilidad */
+  h1, .h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  h2, .h2 {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Correcciones para el layout principal */
+.main-content {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Mejorar visualización de tablas en escritorio */
+@media (min-width: 1024px) {
+  .table-responsive {
+    padding: 0 !important;
+    border: none !important;
+  }
+  
+  .data-table th, .data-table td {
+    padding: 0.75rem 1rem !important;
+  }
+}
+
+/* Optimizar espaciado de cards en pantallas grandes */
+@media (min-width: 1280px) {
+  .card, .content-card {
+    margin-bottom: 1.5rem !important;
+  }
+  
+  .card-header {
+    padding: 1rem 1.25rem !important;
+  }
+  
+  .card-body {
+    padding: 1.25rem !important;
+  }
+}

@@ -1,0 +1,34 @@
+/* Correcciones específicas para tablas en pantallas grandes */
+
+@media (min-width: 1280px) {
+  /* Eliminar scroll horizontal para tablas */
+  table {
+    width: 100% !important;
+    table-layout: auto !important;
+  }
+  
+  /* Permitir que el texto se ajuste en celdas */
+  td, th {
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+  
+  /* Asegurar que los contenedores de tablas no generen scroll */
+  .table-responsive, .overflow-x-auto {
+    overflow-x: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Ajustar distribución de grids */
+  .grid-cols-1, .grid-cols-2, .grid-cols-3 {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    gap: 1rem !important;
+  }
+  
+  /* Calendario a ancho completo */
+  .fc, .fc-view-container, .fc-view, .fc-view > table {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

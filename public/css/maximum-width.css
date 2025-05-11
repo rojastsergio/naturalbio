@@ -1,0 +1,86 @@
+/**
+ * Solución para maximizar el ancho del contenido en pantallas grandes
+ * Elimina restricciones de ancho y permite que el contenido use todo el espacio disponible
+ */
+
+/* Reglas principales para todos los tamaños de pantalla */
+@media screen {
+  /* Forzar contenedores principales a ancho máximo */
+  .container-app, .max-w-7xl, div[class*="container"], .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* Asegurar que el contenido principal use todo el ancho */
+  .main-content, main, .flex-1 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Corregir tablas y otros elementos que puedan causar scroll */
+  table, .table-responsive, .overflow-x-auto {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Restricciones de ancho en px específicas */
+  [style*="max-width"], [class*="max-w-"] {
+    max-width: 100% !important;
+  }
+  
+  /* Permitir que los elementos grid usen todo el espacio */
+  .grid {
+    width: 100% !important;
+  }
+}
+
+/* Pantallas medianas y grandes */
+@media (min-width: 768px) {
+  /* Reducir el padding del contenedor para usar más espacio */
+  .container-app, .max-w-7xl, div[class*="container"], .container {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+  
+  /* Optimización de grids para usar más espacio */
+  .grid-cols-1 {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+  }
+  
+  .grid-cols-3 {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+  }
+}
+
+/* Pantallas extra grandes */
+@media (min-width: 1280px) {
+  /* Maximizar espacio en pantallas muy grandes */
+  .container-app, .max-w-7xl, div[class*="container"], .container {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+  
+  /* Más columnas en grids para aprovechar el espacio */
+  .grid-cols-1 {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+  }
+  
+  .grid-cols-3 {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+  }
+}
+
+/* Asegurar visibilidad del contenido */
+body, html, .min-h-screen {
+  overflow-x: hidden !important;
+}
