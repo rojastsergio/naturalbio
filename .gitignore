@@ -8,7 +8,6 @@
 /vendor
 .env
 .env.backup
-.env.example
 .env.production
 .phpactor.json
 .phpunit.result.cache
@@ -26,4 +25,10 @@ yarn-error.log
 **/.claude/settings.local.json
 # Archivos temporales y específicos del entorno
 *.tar.gz
+*.zip
+naturalbio-deploy*.zip
 assign-doctor-role.php
+temp/
+exclude-list.txt
+deploy/
+.deploy-ignore.txt

@@ -35,18 +35,33 @@ class DoctorAvailabilityController extends Controller
         }
     }
 
-    // Obtener disponibilidades
-    $availabilities = $this->availabilityService->getAvailabilities($doctor, $request);
+    // Comprobar si se solicitan todos los datos
+    $getAllData = $request->has('all_dates') && $request->input('all_dates') === 'true';
+    
+    if ($getAllData) {
+        // Obtener TODAS las disponibilidades sin filtro de fecha
+        $availabilities = $this->availabilityService->getAllAvailabilities($doctor);
+        
+        // Obtener TODAS las citas sin filtro de fecha
+        // El doctor_id en las citas se relaciona con el ID del usuario, no con el ID del doctor
+        $appointments = \Modules\Appointments\Models\Appointment::where('doctor_id', $doctor->user_id)
+            ->with('patient') // Quitamos la relación 'user' que no existe en el modelo Patient
+            ->get();
+    } else {
+        // Obtener disponibilidades filtradas por fecha
+        $availabilities = $this->availabilityService->getAvailabilities($doctor, $request);
 
-    // Obtener citas del doctor
-    $startDate = $request->start_date ?? now()->startOfMonth()->format('Y-m-d');
-    $endDate = $request->end_date ?? now()->endOfMonth()->format('Y-m-d');
+        // Obtener citas del doctor filtradas por fecha
+        $startDate = $request->start_date ?? now()->startOfMonth()->format('Y-m-d');
+        $endDate = $request->end_date ?? now()->endOfMonth()->format('Y-m-d');
 
-    $appointments = \Modules\Appointments\Models\Appointment::where('doctor_id', $doctor->id)
-        ->whereDate('start_time', '>=', $startDate)
-        ->whereDate('start_time', '<=', $endDate)
-        ->with('patient.user')
-        ->get();
+        // El doctor_id en las citas se relaciona con el ID del usuario, no con el ID del doctor
+        $appointments = \Modules\Appointments\Models\Appointment::where('doctor_id', $doctor->user_id)
+            ->whereDate('start_time', '>=', $startDate)
+            ->whereDate('start_time', '<=', $endDate)
+            ->with('patient') // Quitamos la relación 'user' que no existe en el modelo Patient
+            ->get();
+    }
 
     return Inertia::render('Doctors/Availability', [
         'doctor' => $doctor,

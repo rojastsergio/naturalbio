@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>NaturalBio Logo</title>
+    <g id="Logo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="logo-icon" fill-rule="nonzero">
+            <circle id="Background" fill="#4CAF50" cx="16" cy="16" r="16"></circle>
+            <path d="M23.5,9 C24.3284271,9 25,9.67157288 25,10.5 L25,21.5 C25,22.3284271 24.3284271,23 23.5,23 L8.5,23 C7.67157288,23 7,22.3284271 7,21.5 L7,10.5 C7,9.67157288 7.67157288,9 8.5,9 L23.5,9 Z M13.5,11 C11.0147186,11 9,13.0147186 9,15.5 C9,17.9852814 11.0147186,20 13.5,20 C15.9852814,20 18,17.9852814 18,15.5 C18,13.0147186 15.9852814,11 13.5,11 Z M13.5,13 C14.8807119,13 16,14.1192881 16,15.5 C16,16.8807119 14.8807119,18 13.5,18 C12.1192881,18 11,16.8807119 11,15.5 C11,14.1192881 12.1192881,13 13.5,13 Z M20,12 L22,12 L22,14 L20,14 L20,12 Z M20,16 L22,16 L22,18 L20,18 L20,16 Z" id="Shape" fill="#FFFFFF"></path>
+        </g>
+    </g>
+</svg>

@@ -47,14 +47,18 @@ class AppointmentsServiceProvider extends ServiceProvider
      */
     protected function loadRoutes()
     {
-        Route::middleware('web')
-            ->namespace('Modules\Appointments\Controllers')
-            ->group(__DIR__.'/../Routes/web.php');
+        // Las rutas web y API de citas podrían estar duplicadas en routes/web.php
+        // y routes/api.php, por lo que desactivamos la carga automática para evitar
+        // conflictos de nombres como appointments.update
 
-        Route::prefix('api')
-            ->middleware('api')
-            ->namespace('Modules\Appointments\Controllers')
-            ->group(__DIR__.'/../Routes/api.php');
+        // Route::middleware('web')
+        //    ->namespace('Modules\Appointments\Controllers')
+        //    ->group(__DIR__.'/../Routes/web.php');
+
+        // Route::prefix('api')
+        //    ->middleware('api')
+        //    ->namespace('Modules\Appointments\Controllers')
+        //    ->group(__DIR__.'/../Routes/api.php');
     }
 
     /**

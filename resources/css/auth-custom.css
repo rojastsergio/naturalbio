@@ -1,0 +1,75 @@
+/* Estilos personalizados para pantallas de autenticación */
+.auth-gradient-bg {
+    background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+}
+
+.auth-card {
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.auth-card:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.auth-input {
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.auth-input:focus {
+    border-color: #16a34a !important;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+    outline: none !important;
+    ring-color: #16a34a !important;
+}
+
+/* Sobreescribir estilos de Jetstream */
+input:focus, select:focus, textarea:focus {
+    border-color: #16a34a !important;
+    ring-color: #16a34a !important;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+    outline: none !important;
+}
+
+.focus\:border-indigo-500:focus {
+    border-color: #16a34a !important;
+}
+
+.focus\:ring-indigo-500:focus {
+    --tw-ring-color: #16a34a !important;
+}
+
+.auth-button {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.auth-button:hover {
+    transform: translateY(-1px);
+}
+
+.auth-link {
+    color: #16a34a;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.auth-link:hover {
+    color: #15803d;
+    text-decoration: underline;
+    transform: translateY(-1px);
+}
+
+.naturalbio-logo {
+    animation: glow 3s infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 5px rgba(22, 163, 74, 0.1);
+    }
+    to {
+        box-shadow: 0 0 15px rgba(22, 163, 74, 0.3);
+    }
+}

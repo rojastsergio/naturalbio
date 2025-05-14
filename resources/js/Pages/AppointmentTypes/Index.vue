@@ -113,8 +113,8 @@
 </template>
 
 <script>
-import { Link } from '@inertiajs/inertia-vue3'
-import { Inertia } from '@inertiajs/inertia'
+import { Link } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import Pagination from '@/Components/Pagination.vue'
 import ConfirmationModal from '@/Components/ConfirmationModal.vue'
@@ -154,7 +154,7 @@ export default {
     
     function deleteType() {
       if (typeToDelete.value) {
-        Inertia.delete(route('appointment-types.destroy', typeToDelete.value.id), {
+        router.delete(route('appointment-types.destroy', typeToDelete.value.id), {
           onSuccess: () => {
             closeModal()
           }

@@ -13,7 +13,7 @@
               Editar
             </Link>
             <Link
-              :href="route('therapy-instructions.create', { therapy_id: therapy.id })"
+              :href="route('therapies.therapy-instructions.create', { therapy_id: therapy.id })"
               class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150"
             >
               Agregar Instrucción
@@ -89,7 +89,7 @@
                 Instrucciones terapéuticas
               </h3>
               <Link
-                :href="route('therapy-instructions.create', { therapy_id: therapy.id })"
+                :href="route('therapies.therapy-instructions.create', { therapy_id: therapy.id })"
                 class="inline-flex items-center px-3 py-1.5 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150"
               >
                 <span class="mr-1">+</span> Agregar
@@ -113,7 +113,7 @@
                     {{ instruction.body_area ? `Área: ${instruction.body_area}` : '' }}
                   </span>
                   <Link
-                    :href="route('therapy-instructions.show', instruction.id)"
+                    :href="route('therapies.therapy-instructions.show', instruction.id)"
                     class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     Ver detalle

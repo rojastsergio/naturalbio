@@ -41,16 +41,6 @@
           </button>
         </div>
         
-        <!-- Botón nueva disponibilidad -->
-        <button
-          class="bg-naturalbio-verde text-white px-4 py-2 rounded-md flex items-center"
-          @click="$emit('new-availability')"
-        >
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
-          Nueva Disponibilidad
-        </button>
       </div>
     </div>
     
@@ -89,7 +79,8 @@ export default {
     'edit-availability', 
     'delete-availability', 
     'availability-create',
-    'month-changed'
+    'month-changed',
+    'appointment-click'
   ],
   
   data() {
@@ -112,8 +103,8 @@ export default {
           title: 'Disponible',
           start: startStr,
           end: endStr,
-          backgroundColor: '#4CAF50', // Verde - Disponible
-          borderColor: '#4CAF50',
+          backgroundColor: '#8BC34A', // Verde claro - Disponible (diferente del verde de las citas programadas) (diferente del verde de las citas)
+          borderColor: '#7CB342',
           textColor: '#FFFFFF',
           extendedProps: {
             type: 'availability',
@@ -124,17 +115,43 @@ export default {
       
       // Convertir citas al formato de eventos de FullCalendar (si se proporcionan)
       const appointmentEvents = this.appointments.map(appointment => {
+        // Determinar color según el estado de la cita
+        let backgroundColor, borderColor;
+        
+        switch (appointment.status) {
+          case 'scheduled':
+            backgroundColor = '#4CAF50'; // Verde (más oscuro) - Programada
+            borderColor = '#4CAF50';
+            break;
+          case 'completed':
+            backgroundColor = '#2196F3'; // Azul - Completada
+            borderColor = '#2196F3';
+            break;
+          case 'cancelled':
+            backgroundColor = '#9E9E9E'; // Gris - Cancelada
+            borderColor = '#9E9E9E';
+            break;
+          case 'no-show':
+            backgroundColor = '#F44336'; // Rojo - No asistió
+            borderColor = '#F44336';
+            break;
+          default:
+            backgroundColor = '#FBC02D'; // Dorado - Por defecto
+            borderColor = '#FBC02D';
+        }
+        
         return {
           id: `appt_${appointment.id}`,
-          title: appointment.patient ? `Cita: ${appointment.patient.name}` : 'Cita sin paciente',
+          title: appointment.patient ? `${appointment.patient.name}` : 'Sin paciente',
           start: appointment.start_time,
           end: appointment.end_time,
-          backgroundColor: '#FBC02D', // Dorado - Ocupado
-          borderColor: '#FBC02D',
-          textColor: '#333333',
+          backgroundColor: backgroundColor,
+          borderColor: borderColor,
+          textColor: '#FFFFFF',
           extendedProps: {
             type: 'appointment',
-            originalData: appointment
+            originalData: appointment,
+            status: appointment.status
           }
         };
       });
@@ -196,6 +213,7 @@ export default {
           minute: '2-digit',
           hour12: false
         },
+        slotMinTime: '07:30:00',
         eventTimeFormat: {
           hour: '2-digit',
           minute: '2-digit',
@@ -222,7 +240,73 @@ export default {
         },
         
         // Personalizaciones visuales
-        eventContent: this.renderEventContent
+        eventContent: this.renderEventContent,
+        
+        // Configuración de mensajes en español
+        buttonText: {
+          today: 'Hoy',
+          month: 'Mes',
+          week: 'Semana',
+          day: 'Día',
+          list: 'Lista'
+        },
+        
+        // Configuración para vista mensual
+        dayMaxEvents: 3, // Mostrar +más cuando hay más de 3 eventos
+        
+        // Asegurar que los colores se muestren correctamente en todas las vistas
+        eventDidMount: (info) => {
+          // Asegurar que el evento tiene el fondo de color correcto
+          if (info.event.backgroundColor) {
+            info.el.style.backgroundColor = info.event.backgroundColor;
+            info.el.style.borderColor = info.event.borderColor;
+          }
+          
+          // Manejo especial para vista de mes
+          if (this.currentView === 'dayGridMonth') {
+            // Texto visible y con buen contraste
+            const eventEl = info.el.querySelector('.fc-event-title');
+            if (eventEl) {
+              eventEl.style.color = '#FFFFFF';
+              eventEl.style.fontWeight = '600';
+              eventEl.style.padding = '2px 4px';
+            }
+            
+            // Si es una disponibilidad, añadir icono
+            if (info.event.extendedProps.type === 'availability') {
+              const titleEl = info.el.querySelector('.fc-event-title');
+              if (titleEl) {
+                titleEl.innerHTML = '<span class="inline-flex items-center"><svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Disponible</span>';
+              }
+            }
+            
+            // Si es una cita, adaptamos según su estado
+            if (info.event.extendedProps.type === 'appointment') {
+              const status = info.event.extendedProps.status || 'scheduled';
+              let icon = '';
+              
+              // Icono según estado
+              if (status === 'completed') {
+                icon = '<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+              } else if (status === 'cancelled' || status === 'no-show') {
+                icon = '<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+              } else {
+                icon = '<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+              }
+              
+              // Recortar el texto si es muy largo para la vista mensual
+              let eventTitle = info.event.title;
+              if (eventTitle.length > 18) {
+                eventTitle = eventTitle.substring(0, 16) + '...';
+              }
+              
+              const titleEl = info.el.querySelector('.fc-event-title');
+              if (titleEl) {
+                titleEl.innerHTML = `<span class="inline-flex items-center">${icon}${eventTitle}</span>`;
+              }
+            }
+          }
+        }
       });
       
       this.calendar.render();
@@ -250,6 +334,27 @@ export default {
       this.currentView = viewName;
       if (this.calendar) {
         this.calendar.changeView(viewName);
+        
+        // Forzar actualización de estilos para la nueva vista
+        setTimeout(() => {
+          const events = this.calendar.getEvents();
+          events.forEach(event => {
+            const eventEl = this.calendar.getEventById(event.id).el;
+            if (eventEl) {
+              eventEl.style.backgroundColor = event.backgroundColor;
+              eventEl.style.borderColor = event.borderColor;
+              
+              // Asegurar contraste del texto para vista de mes
+              if (viewName === 'dayGridMonth') {
+                const titleEl = eventEl.querySelector('.fc-event-title');
+                if (titleEl) {
+                  titleEl.style.color = '#FFFFFF';
+                  titleEl.style.padding = '2px 4px';
+                }
+              }
+            }
+          });
+        }, 100);
       }
     },
     
@@ -273,6 +378,9 @@ export default {
       if (eventType === 'availability') {
         // Solo permitimos editar disponibilidades, no citas
         this.$emit('edit-availability', eventData);
+      } else if (eventType === 'appointment') {
+        // Emitir evento para ver detalles de la cita
+        this.$emit('appointment-click', eventData);
       }
     },
     
@@ -319,33 +427,100 @@ export default {
     renderEventContent(info) {
       const eventType = info.event.extendedProps.type;
       
-      // Personalizar el aspecto de los eventos según su tipo
-      if (eventType === 'availability') {
-        return {
-          html: `
-            <div class="fc-event-main-content">
-              <div class="flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>${this.formatTimeRange(info.event.start, info.event.end)}</span>
+      // Personalizar el aspecto de los eventos según su tipo y vista actual
+      if (this.currentView === 'dayGridMonth') {
+        // Vista mensual compacta similar a AppointmentCalendar
+        if (eventType === 'availability') {
+          // Formatear hora en formato corto para vista mensual
+          const startTime = info.event.start.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+          
+          return {
+            html: `<div class="fc-daygrid-event-dot" style="border-color: ${info.event.backgroundColor}"></div>
+                   <div class="fc-event-time">${startTime}</div>
+                   <div class="fc-event-title">Disponible</div>`
+          };
+        } else if (eventType === 'appointment') {
+          // Formatear hora en formato corto para vista mensual
+          const startTime = info.event.start.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+          
+          // Recortar el nombre del paciente si es largo
+          let patientName = info.event.title;
+          if (patientName.length > 10) {
+            patientName = patientName.substring(0, 9) + '...';
+          }
+          
+          return {
+            html: `<div class="fc-daygrid-event-dot" style="border-color: ${info.event.backgroundColor}"></div>
+                   <div class="fc-event-time">${startTime}</div>
+                   <div class="fc-event-title">${patientName}</div>`
+          };
+        }
+      } else {
+        // Vista diaria y semanal con más detalles
+        if (eventType === 'availability') {
+          return {
+            html: `
+              <div class="fc-event-main-content">
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span class="font-medium">${this.formatTimeRange(info.event.start, info.event.end)}</span>
+                  <span class="ml-1 text-xs opacity-90">Disponible</span>
+                </div>
               </div>
-            </div>
-          `
-        };
-      } else if (eventType === 'appointment') {
-        return {
-          html: `
-            <div class="fc-event-main-content">
-              <div class="flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>${info.event.title}</span>
+            `
+          };
+        } else if (eventType === 'appointment') {
+          // Obtener el estado en español
+          let statusText = "Programada";
+          const status = info.event.extendedProps.status;
+          
+          switch (status) {
+            case 'scheduled':
+              statusText = "Programada";
+              break;
+            case 'completed':
+              statusText = "Completada";
+              break;
+            case 'cancelled':
+              statusText = "Cancelada";
+              break;
+            case 'no-show':
+              statusText = "No asistió";
+              break;
+          }
+          
+          // Icono apropiado según el estado
+          let icon = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>`;
+          
+          if (status === 'completed') {
+            icon = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>`;
+          } else if (status === 'cancelled' || status === 'no-show') {
+            icon = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>`;
+          }
+          
+          return {
+            html: `
+              <div class="fc-event-main-content">
+                <div class="flex flex-col">
+                  <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      ${icon}
+                    </svg>
+                    <span class="font-medium truncate">${info.event.title}</span>
+                  </div>
+                  <div class="flex items-center text-xs mt-1">
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-white bg-opacity-25">
+                      ${statusText}
+                    </span>
+                    <span class="ml-2">${this.formatTimeRange(info.event.start, info.event.end)}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          `
-        };
+            `
+          };
+        }
       }
       
       return null;
@@ -404,5 +579,99 @@ export default {
 
 :deep(.fc-timegrid-now-indicator-arrow) {
   border-color: #FBC02D !important;
+}
+
+/* Mejoras para los eventos del calendario */
+:deep(.fc-event) {
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+  border: none !important;
+}
+
+:deep(.fc-event-main-content) {
+  padding: 4px;
+}
+
+:deep(.fc-event:hover) {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  transform: translateY(-1px);
+  transition: all 0.2s;
+}
+
+:deep(.fc-daygrid-event) {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+/* Mejor contraste para el texto */
+:deep(.fc-event-title) {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mejora estilo de cabeceras de días */
+:deep(.fc-col-header-cell-cushion) {
+  padding: 8px;
+  font-weight: 600;
+}
+
+:deep(.fc-col-header-cell) {
+  background-color: rgba(76, 175, 80, 0.05);
+}
+
+/* Celdas de hora */
+:deep(.fc-timegrid-slot) {
+  height: 40px !important;
+}
+
+/* Mejoras para vista mensual */
+:deep(.fc-daygrid-event) {
+  padding: 3px 6px;
+  border-radius: 4px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+:deep(.fc-daygrid-day-events) {
+  min-height: 2em;
+  padding: 2px;
+}
+
+:deep(.fc-daygrid-day-number) {
+  font-weight: 500;
+}
+
+:deep(.fc-daygrid-event-dot) {
+  display: none;
+}
+
+:deep(.fc-daygrid-day.fc-day-today) {
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+:deep(.fc-daygrid-day) {
+  transition: background-color 0.15s;
+}
+
+:deep(.fc-daygrid-day:hover) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Estilos para la vista de tiempo */
+:deep(.fc-timegrid-event) {
+  min-height: 24px;
+  border-radius: 0 4px 4px 0 !important;
+  border-left-width: 3px !important;
+}
+
+:deep(.fc-timegrid-now-indicator-line) {
+  border-color: #FF9800 !important;
+  border-width: 2px;
 }
 </style>

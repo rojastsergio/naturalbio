@@ -298,7 +298,7 @@
           axios.put(`/api/therapy-instructions/${this.currentInstructionId}`, formData)
             .then(() => {
               this.showNewInstructionModal = false;
-              this.$inertia.reload();
+              this.$inertia.reload({ only: ['instructions'] });
             })
             .catch(error => {
               console.error('Error al actualizar instrucción:', error);
@@ -308,7 +308,7 @@
           axios.post('/api/therapy-instructions', formData)
             .then(() => {
               this.showNewInstructionModal = false;
-              this.$inertia.reload();
+              this.$inertia.reload({ only: ['instructions'] });
             })
             .catch(error => {
               console.error('Error al crear instrucción:', error);
@@ -320,7 +320,7 @@
           axios.delete(`/api/therapy-instructions/${this.currentInstructionId}`)
             .then(() => {
               this.showNewInstructionModal = false;
-              this.$inertia.reload();
+              this.$inertia.reload({ only: ['instructions'] });
             })
             .catch(error => {
               console.error('Error al eliminar instrucción:', error);

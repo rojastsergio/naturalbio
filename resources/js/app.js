@@ -1,17 +1,38 @@
 import './bootstrap';
 import '../css/app.css';
+import '../css/auth-custom.css';
 
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+
+// Importar Ziggy correctamente
+// La versión antigua de Ziggy no incluye vue.m.js, usar import directo de Ziggy
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+// Ziggy global fallback para evitar errores en producción
+window.Ziggy = window.Ziggy || {
+    url: 'http://52.14.251.198',
+    port: null,
+    defaults: {},
+    routes: {
+        'login': {uri: 'login', methods: ['GET', 'HEAD']},
+        'dashboard': {uri: 'dashboard', methods: ['GET', 'HEAD']}
+        // Puedes añadir más rutas básicas aquí
+    }
+};
+
+window.route = window.route || function(name, params, absolute) {
+    const base = window.Ziggy.url;
+    if (name === 'login') return base + '/login';
+    if (name === 'dashboard') return base + '/dashboard';
+    return base + '/' + name;
+};
+
+const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'NaturalBIO';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    // Agregar la base URL para el subdirectorio
-    base: '/naturalbio',
     resolve: (name) => {
         // Comprueba si es un componente de un módulo
         const parts = name.split('/');
@@ -50,28 +71,28 @@ createInertiaApp({
             }
 
             // Módulo Prescriptions
-if (parts[0] === 'Prescriptions') {
-    return resolvePageComponent(
-        `../../Modules/Prescriptions/Resources/js/Pages/${parts.slice(1).join('/')}.vue`,
-        import.meta.glob('../../Modules/Prescriptions/Resources/js/Pages/**/*.vue')
-    );
-}
+            if (parts[0] === 'Prescriptions') {
+                return resolvePageComponent(
+                    `../../Modules/Prescriptions/Resources/js/Pages/${parts.slice(1).join('/')}.vue`,
+                    import.meta.glob('../../Modules/Prescriptions/Resources/js/Pages/**/*.vue')
+                );
+            }
 
-// Módulo Supplements
-if (parts[0] === 'Supplements') {
-    return resolvePageComponent(
-        `../../Modules/Supplements/Resources/js/Pages/${parts.slice(1).join('/')}.vue`,
-        import.meta.glob('../../Modules/Supplements/Resources/js/Pages/**/*.vue')
-    );
-}
+            // Módulo Supplements
+            if (parts[0] === 'Supplements') {
+                return resolvePageComponent(
+                    `../../Modules/Supplements/Resources/js/Pages/${parts.slice(1).join('/')}.vue`,
+                    import.meta.glob('../../Modules/Supplements/Resources/js/Pages/**/*.vue')
+                );
+            }
 
-// Módulo Recommendations
-if (parts[0] === 'Recommendations') {
-    return resolvePageComponent(
-        `../../Modules/Recommendations/Resources/js/Pages/${parts.slice(1).join('/')}.vue`,
-        import.meta.glob('../../Modules/Recommendations/Resources/js/Pages/**/*.vue')
-    );
-}
+            // Módulo Recommendations
+            if (parts[0] === 'Recommendations') {
+                return resolvePageComponent(
+                    `../../Modules/Recommendations/Resources/js/Pages/${parts.slice(1).join('/')}.vue`,
+                    import.meta.glob('../../Modules/Recommendations/Resources/js/Pages/**/*.vue')
+                );
+            }
         }
         
         // Si no es un componente de módulo, usa la ruta normal
@@ -83,7 +104,7 @@ if (parts[0] === 'Recommendations') {
     setup({ el, App, props, plugin }) {
         return createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue)
+            .use(ZiggyVue, Ziggy) // Pasar Ziggy explícitamente
             .mount(el);
     },
     progress: {

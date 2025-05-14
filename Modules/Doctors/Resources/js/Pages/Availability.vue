@@ -6,9 +6,51 @@
         </h2>
       </template>
   
-      <div class="py-12">
+      <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
+          <!-- Título y botón Nueva Disponibilidad -->
+          <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-naturalbio-gris">Disponibilidad de {{ doctor ? doctor.name : 'Doctor' }}</h1>
+            <button
+              @click="showNewAvailabilityModal = true"
+              class="inline-flex items-center px-4 py-2 bg-naturalbio-verde border border-transparent rounded-md text-sm font-medium text-white hover:bg-naturalbio-verde-700 active:bg-naturalbio-verde-800 focus:outline-none focus:ring-2 focus:ring-naturalbio-verde-500 focus:ring-offset-2 transition-colors duration-150 shadow-sm"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Nueva Disponibilidad
+            </button>
+          </div>
+
+          <!-- Leyenda de colores -->
+          <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-medium text-naturalbio-gris mb-3">Leyenda</h3>
+            <div class="flex flex-wrap gap-4">
+              <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full mr-2" style="background-color: #8BC34A;"></div>
+                <span class="text-sm text-gray-700">Disponible</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full mr-2" style="background-color: #4CAF50;"></div>
+                <span class="text-sm text-gray-700">Cita Programada</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full mr-2" style="background-color: #2196F3;"></div>
+                <span class="text-sm text-gray-700">Cita Completada</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full mr-2" style="background-color: #9E9E9E;"></div>
+                <span class="text-sm text-gray-700">Cita Cancelada</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full mr-2" style="background-color: #F44336;"></div>
+                <span class="text-sm text-gray-700">No Asistió</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendario -->
+          <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
             <availability-calendar
               :availabilities="availabilities"
               :appointments="doctorAppointments"
@@ -17,6 +59,7 @@
               @new-availability="showNewAvailabilityModal = true"
               @availability-create="addTimeSlot"
               @edit-availability="editAvailability"
+              @appointment-click="viewAppointment"
             />
           </div>
         </div>
@@ -173,12 +216,18 @@
       };
     },
     methods: {
+      viewAppointment(appointment) {
+        // Redireccionar a la página de detalle de cita
+        this.$inertia.visit(route('appointments.show', appointment.id));
+      },
       fetchAvailabilities(date) {
-        // Utilizar Inertia para recargar con nuevos parámetros
-        this.$inertia.get(route('doctor.availability'), {
-          start_date: date,
-          end_date: this.getEndDateFromStart(date)
-        }, {
+        // Utilizar router para recargar con nuevos parámetros
+        this.$inertia.visit(route('doctor.availability'), {
+          data: {
+            all_dates: 'true',  // Solicitar todos los datos sin filtro de fecha
+            start_date: date,
+            end_date: this.getEndDateFromStart(date)
+          },
           preserveState: true,
           preserveScroll: true
         });
@@ -254,7 +303,7 @@
           axios.put(`/api/doctor-availabilities/${this.currentAvailabilityId}`, this.availabilityForm)
             .then(() => {
               this.showNewAvailabilityModal = false;
-              this.$inertia.reload();
+              this.$inertia.reload({ only: ['availabilities'] });
             })
             .catch(error => {
               console.error('Error al actualizar disponibilidad:', error);
@@ -264,7 +313,7 @@
           axios.post('/api/doctor-availabilities', this.availabilityForm)
             .then(() => {
               this.showNewAvailabilityModal = false;
-              this.$inertia.reload();
+              this.$inertia.reload({ only: ['availabilities'] });
             })
             .catch(error => {
               console.error('Error al crear disponibilidad:', error);
@@ -276,7 +325,7 @@
           axios.delete(`/api/doctor-availabilities/${this.currentAvailabilityId}`)
             .then(() => {
               this.showNewAvailabilityModal = false;
-              this.$inertia.reload();
+              this.$inertia.reload({ only: ['availabilities'] });
             })
             .catch(error => {
               console.error('Error al eliminar disponibilidad:', error);

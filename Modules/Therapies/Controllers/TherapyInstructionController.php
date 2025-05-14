@@ -122,8 +122,8 @@ class TherapyInstructionController extends Controller
         $validated['status'] = 'active';
         
         $instruction = TherapyInstruction::create($validated);
-        
-        return redirect()->route('therapy-instructions.show', $instruction)
+
+        return redirect()->route('therapies.therapy-instructions.show', $instruction)
             ->with('success', 'Instrucción terapéutica creada exitosamente.');
     }
 
@@ -193,8 +193,8 @@ class TherapyInstructionController extends Controller
         ]);
         
         $instruction->update($validated);
-        
-        return redirect()->route('therapy-instructions.show', $instruction)
+
+        return redirect()->route('therapies.therapy-instructions.show', $instruction)
             ->with('success', 'Instrucción terapéutica actualizada exitosamente.');
     }
 
@@ -209,8 +209,8 @@ class TherapyInstructionController extends Controller
         // $this->authorize('delete', $instruction);
         
         $instruction->delete();
-        
-        return redirect()->route('therapy-instructions.index')
+
+        return redirect()->route('therapies.therapy-instructions.index')
             ->with('success', 'Instrucción terapéutica eliminada exitosamente.');
     }
 }

@@ -29,15 +29,12 @@ class PatientServiceProvider extends ServiceProvider
      */
     protected function registerRoutes(): void
     {
-        Route::middleware('web')
-            ->group(function () {
-                $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
-            });
+        // Web routes are loaded from the main routes/web.php file
+        // to avoid conflicts with route names like patients.index
+        // $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
 
-        Route::prefix('api')
-            ->middleware('api')
-            ->group(function () {
-                $this->loadRoutesFrom(__DIR__.'/../Routes/api.php');
-            });
+        // Las rutas de API de pacientes serán importadas directamente
+        // en routes/api.php para evitar conflictos de nombres
+        // $this->loadRoutesFrom(__DIR__.'/../Routes/api.php');
     }
 }

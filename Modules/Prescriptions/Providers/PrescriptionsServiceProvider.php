@@ -29,11 +29,13 @@ class PrescriptionsServiceProvider extends ServiceProvider
      */
     protected function registerRoutes(): void
     {
-        Route::middleware('web')
-            ->group(base_path('Modules/Prescriptions/Routes/web.php'));
+        // Desactivado para evitar conflictos con rutas en routes/web.php
+        // Route::middleware('web')
+        //    ->group(base_path('Modules/Prescriptions/Routes/web.php'));
 
-        Route::prefix('api')
-            ->middleware('api')
-            ->group(base_path('Modules/Prescriptions/Routes/api.php'));
+        // Las rutas API serán importadas directamente por routes/api.php
+        // Route::prefix('api')
+        //    ->middleware('api')
+        //    ->group(base_path('Modules/Prescriptions/Routes/api.php'));
     }
 }

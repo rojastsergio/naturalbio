@@ -27,5 +27,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('therapy-assignments/{assignment}', [TherapyAssignmentController::class, 'update'])->name('therapy-assignments.update');
     
     // Therapy instructions
-    Route::resource('therapy-instructions', TherapyInstructionController::class);
+    Route::resource('therapy-instructions', TherapyInstructionController::class)->names([
+        'index' => 'therapies.therapy-instructions.index',
+        'create' => 'therapies.therapy-instructions.create',
+        'store' => 'therapies.therapy-instructions.store',
+        'show' => 'therapies.therapy-instructions.show',
+        'edit' => 'therapies.therapy-instructions.edit',
+        'update' => 'therapies.therapy-instructions.update',
+        'destroy' => 'therapies.therapy-instructions.destroy',
+    ]);
 });

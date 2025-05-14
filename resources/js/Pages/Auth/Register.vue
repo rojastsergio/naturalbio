@@ -1,11 +1,10 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import AuthenticationCardEnhanced from '@/Components/AuthenticationCardEnhanced.vue';
+import NaturalBioLogo from '@/Components/NaturalBioLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 
 const form = useForm({
@@ -24,21 +23,23 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Register" />
+    <Head title="Registro" />
 
-    <AuthenticationCard>
+    <AuthenticationCardEnhanced>
         <template #logo>
-            <AuthenticationCardLogo />
+            <NaturalBioLogo />
         </template>
+
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Crear cuenta en NaturalBio</h2>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" value="Nombre" />
                 <TextInput
                     id="name"
                     v-model="form.name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full auth-input"
                     required
                     autofocus
                     autocomplete="name"
@@ -47,12 +48,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="Correo electrónico" />
                 <TextInput
                     id="email"
                     v-model="form.email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full auth-input"
                     required
                     autocomplete="username"
                 />
@@ -60,12 +61,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Contraseña" />
                 <TextInput
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full auth-input"
                     required
                     autocomplete="new-password"
                 />
@@ -73,12 +74,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <InputLabel for="password_confirmation" value="Confirmar contraseña" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full auth-input"
                     required
                     autocomplete="new-password"
                 />
@@ -90,23 +91,28 @@ const submit = () => {
                     <div class="flex items-center">
                         <Checkbox id="terms" v-model:checked="form.terms" name="terms" required />
 
-                        <div class="ms-2">
-                            I agree to the <a target="_blank" :href="route('terms.show')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Terms of Service</a> and <a target="_blank" :href="route('policy.show')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Privacy Policy</a>
+                        <div class="ms-2 text-sm text-gray-600">
+                            Acepto los <a target="_blank" :href="route('terms.show')" class="text-green-700 hover:text-green-900 hover:underline">Términos de servicio</a> y <a target="_blank" :href="route('policy.show')" class="text-green-700 hover:text-green-900 hover:underline">Política de privacidad</a>
                         </div>
                     </div>
                     <InputError class="mt-2" :message="form.errors.terms" />
                 </InputLabel>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Already registered?
+            <div class="flex items-center justify-end mt-6">
+                <Link :href="route('login')" class="text-sm auth-link rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    ¿Ya tienes cuenta?
                 </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
-                </PrimaryButton>
+                <button
+                    type="submit"
+                    class="ms-4 px-5 py-2 bg-green-700 text-white font-medium rounded-md border-0 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 auth-button"
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                >
+                    Registrarse
+                </button>
             </div>
         </form>
-    </AuthenticationCard>
+    </AuthenticationCardEnhanced>
 </template>

@@ -11,6 +11,17 @@ use Illuminate\Support\Facades\Auth;
 class AvailabilityService
 {
     /**
+     * Obtener todas las disponibilidades de un doctor sin filtro de fecha.
+     */
+    public function getAllAvailabilities(Doctor $doctor)
+    {
+        return DoctorAvailability::where('doctor_id', $doctor->id)
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->get();
+    }
+    
+    /**
      * Obtener el doctor asociado al usuario actual.
      */
     public function getCurrentDoctor()

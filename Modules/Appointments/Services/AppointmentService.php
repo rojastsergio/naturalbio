@@ -12,6 +12,48 @@ use Carbon\Carbon;
 class AppointmentService
 {
     /**
+     * Get all appointments for calendar view without pagination.
+     *
+     * @param int $clinicId
+     * @param array $filters
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getAppointmentsForCalendar($clinicId, array $filters = [])
+    {
+        $query = Appointment::forClinic($clinicId)
+            ->with(['patient', 'type', 'doctor']);
+        
+        // Apply date filter only if not requesting all dates
+        if (!isset($filters['all_dates']) && isset($filters['date'])) {
+            $date = Carbon::parse($filters['date']);
+            $query->whereDate('start_time', $date);
+        } else if (!isset($filters['all_dates']) && isset($filters['month']) && isset($filters['year'])) {
+            $month = $filters['month'];
+            $year = $filters['year'];
+            $query->whereYear('start_time', $year)
+                  ->whereMonth('start_time', $month);
+        }
+        
+        // Apply status filter
+        if (isset($filters['status'])) {
+            $query->withStatus($filters['status']);
+        }
+        
+        // Apply doctor filter
+        if (isset($filters['doctor_id'])) {
+            $query->where('doctor_id', $filters['doctor_id']);
+        }
+        
+        // Apply patient filter
+        if (isset($filters['patient_id'])) {
+            $query->where('patient_id', $filters['patient_id']);
+        }
+        
+        // Order by start time
+        return $query->orderBy('start_time', 'asc')->get();
+    }
+    
+    /**
      * Get appointments for a specific clinic with filters.
      *
      * @param int $clinicId
@@ -83,6 +125,11 @@ class AppointmentService
                 $data['start_time'],
                 $data['end_time']
             );
+            
+            // Asegurar que total_price tenga un valor inicial
+            if (!isset($data['total_price'])) {
+                $data['total_price'] = 0;
+            }
             
             // Crear la cita
             $appointment = Appointment::create($data);

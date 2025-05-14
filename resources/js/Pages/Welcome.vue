@@ -20,10 +20,10 @@
 
         <NaturalBioHeroSection>
             <template #cta-primary>
-                <NaturalBioButton variant="primary">Explorar Productos</NaturalBioButton>
+                <NaturalBioButton variant="primary">Nuestros Productos</NaturalBioButton>
             </template>
             <template #cta-secondary>
-                <NaturalBioButton variant="outline">Agendar Consulta</NaturalBioButton>
+                <NaturalBioButton variant="outline">Agendar Mi Cita</NaturalBioButton>
             </template>
             <template #image>
                 <div class="rounded-xl overflow-hidden shadow-xl">

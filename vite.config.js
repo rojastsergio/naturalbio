@@ -4,25 +4,10 @@ import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
 export default defineConfig({
-    // Base para el subdirectorio en producción
-    base: '/build/',
-    
-    build: {
-        // Target para compatibilidad con navegadores
-        target: 'es2015',
-        
-        // Configuración mejorada para producción
-        minify: 'terser',
-        
-        // Asegurar que se genere el manifest.json
-        manifest: true,
-    },
-    
     plugins: [
         laravel({
             input: 'resources/js/app.js',
             refresh: true,
-            publicDirectory: 'public',
         }),
         vue({
             template: {
@@ -33,10 +18,34 @@ export default defineConfig({
             },
         }),
     ],
-    
+    build: {
+        // Genera manifest para que Laravel pueda mapear los assets
+        manifest: true,
+        
+        // No usar contenthash en nombres de archivo
+        rollupOptions: {
+            output: {
+                entryFileNames: `assets/[name].js`,
+                chunkFileNames: `assets/[name].js`,
+                assetFileNames: `assets/[name].[ext]`,
+            },
+        },
+        
+        // Ajustes para mejor compatibilidad
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                // Deshabilitar características avanzadas de JavaScript que podrían causar problemas
+                ecma: 2015,
+                drop_console: false,
+                drop_debugger: true,
+            },
+        },
+    },
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, 'resources/js'),
+            '@': '/resources/js',
+            'ziggy': '/vendor/tightenco/ziggy',
             'Modules': path.resolve(__dirname, 'Modules')
         },
     },

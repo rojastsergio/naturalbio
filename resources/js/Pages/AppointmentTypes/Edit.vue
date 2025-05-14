@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import { Link, useForm } from '@inertiajs/inertia-vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
 export default {

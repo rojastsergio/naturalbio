@@ -49,6 +49,12 @@ class AppointmentController extends Controller
     $filters = $request->all();
     $clinicId = $request->user()->clinic_id;
     
+    // Check if we're requesting calendar format
+    if ($request->input('format') === 'calendar') {
+        $allAppointments = $this->appointmentService->getAppointmentsForCalendar($clinicId, $filters);
+        return response()->json(['appointments' => $allAppointments]);
+    }
+    
     $appointments = $this->appointmentService->getAppointments($clinicId, $filters);
     
     // Obtener tipos de cita para el filtro

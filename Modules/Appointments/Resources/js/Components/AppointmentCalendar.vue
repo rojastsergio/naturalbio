@@ -75,15 +75,38 @@ let calendar = null;
 // Métodos
 function formatEvents() {
   return props.appointments.map(appointment => {
-    const color = getAppointmentTypeColor(appointment.appointment_type_id);
+    // Determinar el color según el estado de la cita
+    let backgroundColor, borderColor;
+    
+    switch (appointment.status) {
+      case 'scheduled':
+        backgroundColor = '#4CAF50'; // Verde - Programada
+        borderColor = '#4CAF50';
+        break;
+      case 'completed':
+        backgroundColor = '#2196F3'; // Azul - Completada
+        borderColor = '#2196F3';
+        break;
+      case 'cancelled':
+        backgroundColor = '#9E9E9E'; // Gris - Cancelada
+        borderColor = '#9E9E9E';
+        break;
+      case 'no-show':
+        backgroundColor = '#F44336'; // Rojo - No asistió
+        borderColor = '#F44336';
+        break;
+      default:
+        backgroundColor = '#4CAF50'; // Verde por defecto (programada)
+        borderColor = '#4CAF50';
+    }
     
     return {
       id: appointment.id,
       title: appointment.patient ? appointment.patient.name : 'Sin paciente',
       start: appointment.start_time,
       end: appointment.end_time,
-      backgroundColor: color,
-      borderColor: color,
+      backgroundColor: backgroundColor,
+      borderColor: borderColor,
       extendedProps: {
         fullAppointment: appointment
       }
@@ -113,6 +136,7 @@ function initCalendar() {
     nowIndicator: true,
     allDaySlot: false,
     slotDuration: '00:15:00',
+    slotMinTime: '07:30:00',
     eventClick: (info) => {
       const appointment = info.event.extendedProps.fullAppointment;
       emit('appointment-click', appointment);

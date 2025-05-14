@@ -59,6 +59,21 @@ class Patient extends Model
     {
         return $this->belongsTo(\App\Models\Municipality::class);
     }
+    
+    /**
+     * Get the department through the municipality.
+     */
+    public function department()
+    {
+        return $this->hasOneThrough(
+            \App\Models\Department::class,
+            \App\Models\Municipality::class,
+            'id', // Foreign key on municipalities table
+            'id', // Foreign key on departments table
+            'municipality_id', // Local key on patients table
+            'department_id' // Local key on municipalities table
+        );
+    }
 
     /**
      * Get the vital signs for the patient.

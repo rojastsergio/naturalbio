@@ -32,9 +32,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware('web')
-            ->namespace($this->moduleNamespace)
-            ->group(__DIR__.'/../Routes/web.php');
+        // Desactivado para evitar conflictos con rutas en routes/web.php
+        // Route::middleware('web')
+        //     ->namespace($this->moduleNamespace)
+        //     ->group(__DIR__.'/../Routes/web.php');
     }
 
     /**
@@ -44,9 +45,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
-        Route::prefix('api')
-            ->middleware('api')
-            ->namespace($this->moduleNamespace)
-            ->group(__DIR__.'/../Routes/api.php');
+        // Desactivado para evitar conflictos con rutas en routes/api.php
+        // Route::prefix('api')
+        //     ->middleware('api')
+        //     ->namespace($this->moduleNamespace)
+        //     ->group(__DIR__.'/../Routes/api.php');
     }
 }

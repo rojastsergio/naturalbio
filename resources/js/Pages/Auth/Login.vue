@@ -1,11 +1,10 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import AuthenticationCardEnhanced from '@/Components/AuthenticationCardEnhanced.vue';
+import NaturalBioLogo from '@/Components/NaturalBioLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 
 defineProps({
@@ -30,25 +29,27 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Log in" />
+    <Head title="Iniciar sesión" />
 
-    <AuthenticationCard>
+    <AuthenticationCardEnhanced>
         <template #logo>
-            <AuthenticationCardLogo />
+            <NaturalBioLogo />
         </template>
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Bienvenido a NaturalBio</h2>
+
+        <div v-if="status" class="mb-4 font-medium text-sm bg-green-50 text-green-700 p-3 rounded-lg">
             {{ status }}
         </div>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="Correo electrónico" />
                 <TextInput
                     id="email"
                     v-model="form.email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full auth-input"
                     required
                     autofocus
                     autocomplete="username"
@@ -57,12 +58,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Contraseña" />
                 <TextInput
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full auth-input"
                     required
                     autocomplete="current-password"
                 />
@@ -72,19 +73,32 @@ const submit = () => {
             <div class="block mt-4">
                 <label class="flex items-center">
                     <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">Remember me</span>
+                    <span class="ms-2 text-sm text-gray-600">Recordarme</span>
                 </label>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link v-if="canResetPassword" :href="route('password.request')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Forgot your password?
-                </Link>
+            <div class="mt-6">
+                <div class="flex items-center justify-end mb-2">
+                    <Link v-if="canResetPassword" :href="route('password.request')" class="text-sm auth-link rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        ¿Olvidaste tu contraseña?
+                    </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
+                    <button
+                        type="submit"
+                        class="ms-4 px-5 py-2 bg-green-700 text-white font-medium rounded-md border-0 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 auth-button"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Iniciar sesión
+                    </button>
+                </div>
+
+                <div class="text-center pt-4 mt-4 border-t border-gray-200">
+                    <Link :href="route('register')" class="text-sm auth-link hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        ¿No tienes cuenta? Regístrate aquí
+                    </Link>
+                </div>
             </div>
         </form>
-    </AuthenticationCard>
+    </AuthenticationCardEnhanced>
 </template>

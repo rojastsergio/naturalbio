@@ -16,41 +16,25 @@
           </Link>
         </div>
 
-        <!-- Tarjetas de estadísticas -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex justify-between items-center">
-            <div>
-              <h3 class="text-sm font-medium text-naturalbio-gris mb-1">Citas Programadas</h3>
-              <p class="text-3xl font-semibold text-naturalbio-verde">{{ parseNumber(statistics.scheduled) }}</p>
+        <!-- Leyenda de colores -->
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 mb-6">
+          <h3 class="text-lg font-medium text-naturalbio-gris mb-3">Leyenda</h3>
+          <div class="flex flex-wrap gap-4">
+            <div class="flex items-center">
+              <div class="w-4 h-4 rounded-full mr-2" style="background-color: #4CAF50;"></div>
+              <span class="text-sm text-gray-700">Cita Programada</span>
             </div>
-            <div class="h-12 w-12 bg-naturalbio-verde bg-opacity-10 rounded-full flex items-center justify-center">
-              <svg class="w-6 h-6 text-naturalbio-verde" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
+            <div class="flex items-center">
+              <div class="w-4 h-4 rounded-full mr-2" style="background-color: #2196F3;"></div>
+              <span class="text-sm text-gray-700">Cita Completada</span>
             </div>
-          </div>
-
-          <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex justify-between items-center">
-            <div>
-              <h3 class="text-sm font-medium text-naturalbio-gris mb-1">Citas Completadas</h3>
-              <p class="text-3xl font-semibold text-naturalbio-azul">{{ parseNumber(statistics.completed) }}</p>
+            <div class="flex items-center">
+              <div class="w-4 h-4 rounded-full mr-2" style="background-color: #9E9E9E;"></div>
+              <span class="text-sm text-gray-700">Cita Cancelada</span>
             </div>
-            <div class="h-12 w-12 bg-naturalbio-azul bg-opacity-10 rounded-full flex items-center justify-center">
-              <svg class="w-6 h-6 text-naturalbio-azul" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-          </div>
-
-          <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex justify-between items-center">
-            <div>
-              <h3 class="text-sm font-medium text-naturalbio-gris mb-1">Ingresos Totales</h3>
-              <p class="text-3xl font-semibold text-naturalbio-dorado">Q {{ formatCurrency(statistics.total_revenue) }}</p>
-            </div>
-            <div class="h-12 w-12 bg-naturalbio-dorado bg-opacity-10 rounded-full flex items-center justify-center">
-              <svg class="w-6 h-6 text-naturalbio-dorado" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
+            <div class="flex items-center">
+              <div class="w-4 h-4 rounded-full mr-2" style="background-color: #F44336;"></div>
+              <span class="text-sm text-gray-700">No Asistió</span>
             </div>
           </div>
         </div>
@@ -236,8 +220,8 @@
                   :class="{
                     'bg-naturalbio-verde': appointment.status === 'scheduled',
                     'bg-naturalbio-azul': appointment.status === 'completed',
-                    'bg-naturalbio-dorado': appointment.status === 'no-show',
-                    'bg-naturalbio-gris': appointment.status === 'cancelled'
+                    'bg-naturalbio-gris': appointment.status === 'cancelled',
+                    'bg-red-500': appointment.status === 'no-show'
                   }"
                 >
                   <div class="flex justify-between items-center">
@@ -283,7 +267,7 @@
                       <svg class="w-4 h-4 mt-0.5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
-                      <span class="font-medium text-naturalbio-dorado">Q {{ formatCurrency(appointment.price) }}</span>
+                      <span class="font-medium">Q {{ formatCurrency(appointment.price) }}</span>
                     </div>
                   </div>
                   
@@ -554,16 +538,39 @@ function loadCalendarAppointments() {
   
   console.log('Cargando citas para el calendario:', calendarMonth.value, calendarYear.value);
   
+  // Primero, convertimos las citas actuales para mostrarlas inmediatamente
+  if (props.appointments && props.appointments.data) {
+    const formattedAppointments = props.appointments.data.map(appointment => {
+      return {
+        id: appointment.id,
+        patient_id: appointment.patient_id,
+        doctor_id: appointment.doctor_id,
+        appointment_type_id: appointment.appointment_type_id,
+        start_time: appointment.start_time,
+        end_time: appointment.end_time,
+        status: appointment.status,
+        patient: appointment.patient,
+        type: appointment.type,
+        doctor: appointment.doctor
+      };
+    });
+    
+    // Primero usar las citas proporcionadas por props
+    calendarAppointments.value = formattedAppointments;
+  }
+  
+  // Luego hacer la petición para obtener todas las citas, no solo las del mes actual
   axios.get(route('appointments.index'), {
     params: {
-      month: calendarMonth.value,
-      year: calendarYear.value,
-      format: 'calendar'
+      format: 'calendar',
+      all_dates: true // Parámetro para indicar que queremos todas las citas
     }
   })
     .then(response => {
       console.log('Citas del calendario recibidas:', response.data.appointments);
-      calendarAppointments.value = response.data.appointments || [];
+      if (response.data.appointments && response.data.appointments.length > 0) {
+        calendarAppointments.value = response.data.appointments;
+      }
     })
     .catch(error => {
       console.error('Error al cargar citas para el calendario:', error);

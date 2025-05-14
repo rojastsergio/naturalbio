@@ -294,9 +294,16 @@ function getStatusName(statusCode) {
                                         <p class="mt-1">{{ patient.address || 'No registrada' }}</p>
                                     </div>
                                     
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400">Municipio:</h4>
-                                        <p class="mt-1">{{ patient.municipality ? patient.municipality.name : 'No registrado' }}</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400">Municipio:</h4>
+                                            <p class="mt-1">{{ patient.municipality ? patient.municipality.name : 'No registrado' }}</p>
+                                        </div>
+                                        
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400">Departamento:</h4>
+                                            <p class="mt-1">{{ patient.municipality && patient.municipality.department ? patient.municipality.department.name : 'No disponible' }}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

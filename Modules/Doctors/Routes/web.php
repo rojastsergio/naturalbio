@@ -28,5 +28,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Instrucciones terapéuticas
     Route::get('/doctor/therapy-instructions', [TherapyInstructionController::class, 'index'])->name('doctor.therapy-instructions');
     Route::get('/doctors/{doctor}/therapy-instructions', [TherapyInstructionController::class, 'index'])->name('doctors.therapy-instructions');
-    Route::get('/therapy-instructions/{instruction}', [TherapyInstructionController::class, 'show'])->name('therapy-instructions.show');
+    Route::get('/therapy-instructions/{instruction}', [TherapyInstructionController::class, 'show'])->name('doctor.therapy-instructions.show');
 });

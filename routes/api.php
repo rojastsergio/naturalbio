@@ -31,7 +31,64 @@ Route::get('/patients/search', function (Request $request) {
         });
 
     return response()->json(['patients' => $patients]);
+})->name('api.patients.search.global');
+
+// Rutas para municipios
+Route::prefix('municipios')->group(function () {
+    // Buscar municipios
+    Route::get('/search', function (Request $request) {
+        $search = $request->input('q', '');
+
+        if (strlen($search) < 2) {
+            return response()->json(['municipios' => []]);
+        }
+
+        $municipios = \App\Models\Municipality::with('department')
+            ->where('name', 'like', "%{$search}%")
+            ->orderBy('name')
+            ->limit(10)
+            ->get()
+            ->map(function($municipio) {
+                return [
+                    'id' => $municipio->id,
+                    'nombre' => $municipio->name,
+                    'code' => $municipio->code,
+                    'departamento' => [
+                        'id' => $municipio->department->id,
+                        'nombre' => $municipio->department->name,
+                        'code' => $municipio->department->code,
+                    ]
+                ];
+            });
+
+        return response()->json(['municipios' => $municipios]);
+    })->name('api.municipios.search');
+
+    // Obtener un municipio específico
+    Route::get('/{id}', function ($id) {
+        $municipio = \App\Models\Municipality::with('department')->find($id);
+
+        if (!$municipio) {
+            return response()->json(['error' => 'Municipio no encontrado'], 404);
+        }
+
+        return response()->json([
+            'municipio' => [
+                'id' => $municipio->id,
+                'nombre' => $municipio->name,
+                'code' => $municipio->code,
+                'departamento' => [
+                    'id' => $municipio->department->id,
+                    'nombre' => $municipio->department->name,
+                    'code' => $municipio->department->code,
+                ]
+            ]
+        ]);
+    })->name('api.municipios.show');
 });
 
+// Importamos manualmente los módulos con posibles conflictos de rutas
+require_once base_path('Modules/Patients/Routes/api.php');
 require_once base_path('Modules/Doctors/Routes/api.php');
 require_once base_path('Modules/Prescriptions/Routes/api.php');
+require_once base_path('Modules/Appointments/Routes/api.php');

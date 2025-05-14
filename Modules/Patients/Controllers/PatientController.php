@@ -25,7 +25,7 @@ class PatientController extends Controller
      */
     public function index(Request $request)
     {
-        $patients = Patient::with(['municipality', 'latestVitalSigns'])
+        $patients = Patient::with(['municipality.department', 'latestVitalSigns'])
             ->when($request->has('search'), function ($query) use ($request) {
                 $search = $request->input('search');
                 $query->where(function ($q) use ($search) {
@@ -57,11 +57,24 @@ class PatientController extends Controller
      */
     public function create()
     {
-        // Usar el método unique de Collection para filtrar por nombre
-        $municipalities = Municipality::orderBy('name')
+        // Cargar municipios con su departamento asociado
+        $municipalities = Municipality::with('department')
+            ->orderBy('name')
             ->get()
             ->unique('name')
             ->values()
+            ->map(function ($municipality) {
+                return [
+                    'id' => $municipality->id,
+                    'name' => $municipality->name,
+                    'code' => $municipality->code,
+                    'department' => [
+                        'id' => $municipality->department->id,
+                        'name' => $municipality->department->name,
+                        'code' => $municipality->department->code,
+                    ]
+                ];
+            })
             ->all();
 
         return Inertia::render('Patients/Create', [
@@ -133,7 +146,7 @@ class PatientController extends Controller
      */
     public function show(Patient $patient)
     {
-        $patient->load(['municipality', 'vitalSigns' => function ($query) {
+        $patient->load(['municipality.department', 'vitalSigns' => function ($query) {
             $query->orderBy('recorded_at', 'desc');
         }, 'vitalSigns.recordedBy']);
 
@@ -147,13 +160,26 @@ class PatientController extends Controller
      */
     public function edit(Patient $patient)
     {
-        $patient->load('municipality');
+        $patient->load('municipality.department');
         
-        // Usar el método unique de Collection para filtrar por nombre
-        $municipalities = Municipality::orderBy('name')
+        // Cargar municipios con su departamento asociado
+        $municipalities = Municipality::with('department')
+            ->orderBy('name')
             ->get()
             ->unique('name')
             ->values()
+            ->map(function ($municipality) {
+                return [
+                    'id' => $municipality->id,
+                    'name' => $municipality->name,
+                    'code' => $municipality->code,
+                    'department' => [
+                        'id' => $municipality->department->id,
+                        'name' => $municipality->department->name,
+                        'code' => $municipality->department->code,
+                    ]
+                ];
+            })
             ->all();
 
         return Inertia::render('Patients/Edit', [
@@ -253,6 +279,69 @@ class PatientController extends Controller
 
         return response()->json([
             'patients' => $patients
+        ]);
+    }
+    
+    /**
+     * Search for municipalities
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchMunicipalities(Request $request)
+    {
+        $search = $request->input('q', '');
+
+        if (strlen($search) < 2) {
+            return response()->json(['municipios' => []]);
+        }
+
+        $municipios = \App\Models\Municipality::with('department')
+            ->where('name', 'like', "%{$search}%")
+            ->orderBy('name')
+            ->limit(10)
+            ->get()
+            ->map(function($municipio) {
+                return [
+                    'id' => $municipio->id,
+                    'nombre' => $municipio->name,
+                    'code' => $municipio->code,
+                    'departamento' => [
+                        'id' => $municipio->department->id,
+                        'nombre' => $municipio->department->name,
+                        'code' => $municipio->department->code,
+                    ]
+                ];
+            });
+
+        return response()->json(['municipios' => $municipios]);
+    }
+
+    /**
+     * Get municipality by ID
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getMunicipality($id)
+    {
+        $municipio = \App\Models\Municipality::with('department')->find($id);
+
+        if (!$municipio) {
+            return response()->json(['error' => 'Municipio no encontrado'], 404);
+        }
+
+        return response()->json([
+            'municipio' => [
+                'id' => $municipio->id,
+                'nombre' => $municipio->name,
+                'code' => $municipio->code,
+                'departamento' => [
+                    'id' => $municipio->department->id,
+                    'nombre' => $municipio->department->name,
+                    'code' => $municipio->department->code,
+                ]
+            ]
         ]);
     }
 }

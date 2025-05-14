@@ -24,7 +24,7 @@
                 </div>
                 
                 <div class="flex space-x-3">
-                  <inertia-link
+                  <Link
                     v-if="canEdit"
                     :href="route('appointments.edit', appointment.id)"
                     class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-naturalbio-verde"
@@ -33,7 +33,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
                     Editar
-                  </inertia-link>
+                  </Link>
                   
                   <button
                     v-if="canSendReminder"
@@ -68,7 +68,7 @@
                     
                     <div class="flex items-center mb-2">
                       <div v-if="appointment.patient.photo_path" class="mr-3">
-                        <img :src="appointment.patient.photo_path" alt="Foto del paciente" class="h-12 w-12 rounded-full object-cover" />
+                        <img :src="`/storage/${appointment.patient.photo_path}`" alt="Foto del paciente" class="h-12 w-12 rounded-full object-cover" />
                       </div>
                       <div>
                         <div class="font-semibold">{{ appointment.patient.name }} {{ appointment.patient.last_name }}</div>
@@ -102,12 +102,12 @@
                     </div>
                     
                     <div class="mt-3">
-                      <inertia-link
+                      <Link
                         :href="route('patients.show', appointment.patient.id)"
                         class="text-sm text-naturalbio-verde hover:underline"
                       >
                         Ver perfil completo
-                      </inertia-link>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -164,7 +164,7 @@
                       
                       <div>
                         <div class="text-sm text-gray-500">Precio Total</div>
-                        <div class="font-medium text-naturalbio-verde">Q {{ appointment.total_price.toFixed(2) }}</div>
+                        <div class="font-medium text-naturalbio-verde">Q {{ typeof appointment.total_price === 'number' ? appointment.total_price.toFixed(2) : (parseFloat(appointment.total_price) || 0).toFixed(2) }}</div>
                       </div>
                     </div>
                     
@@ -196,7 +196,7 @@
                             </div>
                           </div>
                           <div class="font-medium text-naturalbio-verde">
-                            Q {{ parseFloat(therapy.pivot.price).toFixed(2) }}
+                            Q {{ therapy.pivot && therapy.pivot.price ? parseFloat(therapy.pivot.price).toFixed(2) : '0.00' }}
                           </div>
                         </div>
                       </div>
@@ -213,7 +213,7 @@
   
   <script setup>
   import { ref, computed } from 'vue';
-  import { router } from '@inertiajs/vue3';
+  import { router, Link } from '@inertiajs/vue3';
   import { format, parseISO, differenceInMinutes } from 'date-fns';
   import { es } from 'date-fns/locale';
   import axios from 'axios';

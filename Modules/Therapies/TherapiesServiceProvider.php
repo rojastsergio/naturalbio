@@ -29,9 +29,11 @@ class TherapiesServiceProvider extends ServiceProvider
      */
     protected function registerRoutes(): void
     {
-        Route::middleware('web')
-            ->group(__DIR__ . '/Routes/web.php');
+        // Desactivado para evitar conflictos con rutas en routes/web.php
+        // Route::middleware('web')
+        //    ->group(__DIR__ . '/Routes/web.php');
 
+        // Las rutas API pueden ser cargadas normalmente
         Route::prefix('api')
             ->middleware('api')
             ->group(__DIR__ . '/Routes/api.php');
