@@ -148,7 +148,50 @@ function getGenderName(genderCode) {
 }
 
 function getStatusName(statusCode) {
-    return statusCode === 'active' ? 'Activo' : 'Inactivo';
+    const statusMap = {
+        'active': 'Activo',
+        'inactive': 'Inactivo',
+        'scheduled': 'Programada',
+        'confirmed': 'Confirmada',
+        'in_progress': 'En Progreso',
+        'completed': 'Completada',
+        'cancelled': 'Cancelada',
+        'no_show': 'No Asistió'
+    };
+    
+    return statusMap[statusCode] || statusCode;
+}
+
+// Función para filtrar citas por estado
+function getAppointmentsByStatus(statusList) {
+    if (!patient.appointments) return [];
+    return patient.appointments.filter(appointment => statusList.includes(appointment.status));
+}
+
+// Función para formatear fecha y hora
+function formatDateTime(dateString) {
+    if (!dateString) return '';
+    try {
+        const date = new Date(dateString);
+        
+        // Formatear fecha
+        const dateFormatted = date.toLocaleDateString('es-GT', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        // Formatear hora
+        const timeFormatted = date.toLocaleTimeString('es-GT', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        return `${dateFormatted} - ${timeFormatted}`;
+    } catch (error) {
+        console.error('Error formatting date time:', error);
+        return dateString;
+    }
 }
 </script>
 
@@ -423,7 +466,7 @@ function getStatusName(statusCode) {
                                         id="vital_notes"
                                         v-model="vitalSignForm.notes"
                                         class="w-full mt-1"
-                                        rows="3"
+                                        :rows="3"
                                     />
                                     <InputError :message="vitalSignForm.errors.notes" class="mt-2" />
                                 </div>
@@ -550,8 +593,157 @@ function getStatusName(statusCode) {
                                     </Link>
                                 </div>
                                 
-                                <div class="text-center py-8">
+                                <div v-if="!patient.appointments || patient.appointments.length === 0" class="text-center py-8">
                                     <p class="text-gray-500 dark:text-gray-400">No hay citas registradas.</p>
+                                </div>
+                                <div v-else>
+                                    <!-- Citas programadas -->
+                                    <div v-if="getAppointmentsByStatus(['scheduled', 'confirmed']).length > 0" class="mb-8">
+                                        <h4 class="text-md font-medium text-gray-800 dark:text-gray-200 mb-3 border-b pb-2">
+                                            Citas Programadas
+                                        </h4>
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                                    <tr>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tipo</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Doctor</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                    <tr v-for="appointment in getAppointmentsByStatus(['scheduled', 'confirmed'])" :key="appointment.id">
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
+                                                            {{ formatDateTime(appointment.start_time) }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                            {{ appointment.type ? appointment.type.name : 'No especificado' }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                            {{ appointment.doctor ? appointment.doctor.name : 'No asignado' }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                            <span 
+                                                                :class="{
+                                                                    'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300': appointment.status === 'scheduled',
+                                                                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300': appointment.status === 'confirmed',
+                                                                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300': appointment.status === 'in_progress',
+                                                                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300': appointment.status === 'cancelled',
+                                                                    'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300': appointment.status === 'completed',
+                                                                    'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300': appointment.status === 'no_show'
+                                                                }"
+                                                                class="px-2 py-1 rounded-full text-xs font-medium"
+                                                            >
+                                                                {{ getStatusName(appointment.status) }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                            <Link
+                                                                :href="route('appointments.show', appointment.id)"
+                                                                class="text-naturalbio-azul hover:text-naturalbio-verde dark:text-naturalbio-verde dark:hover:text-naturalbio-verde-light"
+                                                            >
+                                                                Ver detalles
+                                                            </Link>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Citas completadas -->
+                                    <div v-if="getAppointmentsByStatus(['completed']).length > 0" class="mb-8">
+                                        <h4 class="text-md font-medium text-gray-800 dark:text-gray-200 mb-3 border-b pb-2">
+                                            Citas Completadas
+                                        </h4>
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                                    <tr>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tipo</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Doctor</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                    <tr v-for="appointment in getAppointmentsByStatus(['completed'])" :key="appointment.id">
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
+                                                            {{ formatDateTime(appointment.start_time) }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                            {{ appointment.type ? appointment.type.name : 'No especificado' }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                            {{ appointment.doctor ? appointment.doctor.name : 'No asignado' }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                            <Link
+                                                                :href="route('appointments.show', appointment.id)"
+                                                                class="text-naturalbio-azul hover:text-naturalbio-verde dark:text-naturalbio-verde dark:hover:text-naturalbio-verde-light"
+                                                            >
+                                                                Ver detalles
+                                                            </Link>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Citas canceladas / no asistidas -->
+                                    <div v-if="getAppointmentsByStatus(['cancelled', 'no_show']).length > 0">
+                                        <h4 class="text-md font-medium text-gray-800 dark:text-gray-200 mb-3 border-b pb-2">
+                                            Citas Canceladas o No Asistidas
+                                        </h4>
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                                    <tr>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tipo</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Doctor</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
+                                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                    <tr v-for="appointment in getAppointmentsByStatus(['cancelled', 'no_show'])" :key="appointment.id">
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
+                                                            {{ formatDateTime(appointment.start_time) }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                            {{ appointment.type ? appointment.type.name : 'No especificado' }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                            {{ appointment.doctor ? appointment.doctor.name : 'No asignado' }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                            <span 
+                                                                :class="{
+                                                                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300': appointment.status === 'cancelled',
+                                                                    'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300': appointment.status === 'no_show'
+                                                                }"
+                                                                class="px-2 py-1 rounded-full text-xs font-medium"
+                                                            >
+                                                                {{ getStatusName(appointment.status) }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                            <Link
+                                                                :href="route('appointments.show', appointment.id)"
+                                                                class="text-naturalbio-azul hover:text-naturalbio-verde dark:text-naturalbio-verde dark:hover:text-naturalbio-verde-light"
+                                                            >
+                                                                Ver detalles
+                                                            </Link>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

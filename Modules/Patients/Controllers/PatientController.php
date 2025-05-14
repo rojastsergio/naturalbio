@@ -146,9 +146,16 @@ class PatientController extends Controller
      */
     public function show(Patient $patient)
     {
-        $patient->load(['municipality.department', 'vitalSigns' => function ($query) {
-            $query->orderBy('recorded_at', 'desc');
-        }, 'vitalSigns.recordedBy']);
+        $patient->load([
+            'municipality.department', 
+            'vitalSigns' => function ($query) {
+                $query->orderBy('recorded_at', 'desc');
+            }, 
+            'vitalSigns.recordedBy',
+            'appointments' => function ($query) {
+                $query->with(['type', 'doctor'])->orderBy('start_time', 'desc');
+            }
+        ]);
 
         return Inertia::render('Patients/Show', [
             'patient' => $patient,

@@ -50,6 +50,14 @@ const filteredMunicipalities = computed(() => {
         .slice(0, 20); // Limitar a 20 resultados para mejor rendimiento
 });
 
+// Función para manejar el evento blur del campo de búsqueda de municipios
+function handleMunicipalityBlur() {
+    // Esperar un momento antes de ocultar el dropdown para permitir que el clic en un ítem se procese
+    setTimeout(() => {
+        showMunicipalityDropdown.value = false;
+    }, 200);
+}
+
 // Seleccionar un municipio de la lista desplegable
 function selectMunicipality(municipality) {
     form.municipality_id = municipality.id;
@@ -481,7 +489,7 @@ function submitForm() {
                                         placeholder="Buscar municipio..."
                                         autocomplete="off"
                                         @focus="showMunicipalityDropdown = true"
-                                        @blur="setTimeout(() => showMunicipalityDropdown = false, 200)"
+                                        @blur="handleMunicipalityBlur"
                                     />
                                     
                                     <!-- Icono de búsqueda -->

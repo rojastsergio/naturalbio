@@ -36,9 +36,77 @@ const photoPreview = ref(props.patient.photo_path ? `/storage/${props.patient.ph
 const signaturePad = ref(null);
 const isDrawing = ref(false);
 const startPoint = reactive({ x: 0, y: 0 });
+const departmentName = ref('');
+const municipalitySearchQuery = ref('');
+const showMunicipalityDropdown = ref(false);
+const selectedMunicipalityObj = ref(null);
+
+// Filtrar municipios según el texto de búsqueda
+const filteredMunicipalities = computed(() => {
+    if (!municipalitySearchQuery.value || municipalitySearchQuery.value.length < 2) {
+        return props.municipalities.slice(0, 10); // Mostrar los primeros 10 por defecto
+    }
+    
+    const searchTerm = municipalitySearchQuery.value.toLowerCase();
+    return props.municipalities
+        .filter(m => 
+            m.name.toLowerCase().includes(searchTerm) || 
+            m.department.name.toLowerCase().includes(searchTerm)
+        )
+        .slice(0, 20); // Limitar a 20 resultados para mejor rendimiento
+});
+
+// Función para manejar el evento blur del campo de búsqueda de municipios
+function handleMunicipalityBlur() {
+    // Esperar un momento antes de ocultar el dropdown para permitir que el clic en un ítem se procese
+    setTimeout(() => {
+        showMunicipalityDropdown.value = false;
+    }, 200);
+}
+
+// Seleccionar un municipio de la lista desplegable
+function selectMunicipality(municipality) {
+    form.municipality_id = municipality.id;
+    selectedMunicipalityObj.value = municipality;
+    municipalitySearchQuery.value = municipality.name;
+    
+    // Actualizar el departamento
+    if (municipality.department) {
+        departmentName.value = municipality.department.name;
+    } else {
+        departmentName.value = '';
+    }
+    
+    showMunicipalityDropdown.value = false;
+}
+
+// Función para actualizar el departamento cuando se selecciona un municipio
+function updateDepartment() {
+    if (!form.municipality_id) {
+        departmentName.value = '';
+        return;
+    }
+    
+    // Buscar el municipio seleccionado en el array de municipios
+    const selectedMunicipality = props.municipalities.find(m => Number(m.id) === Number(form.municipality_id));
+    
+    // Si encontramos el municipio y tiene departamento asociado
+    if (selectedMunicipality && selectedMunicipality.department) {
+        departmentName.value = selectedMunicipality.department.name;
+        municipalitySearchQuery.value = selectedMunicipality.name;
+        selectedMunicipalityObj.value = selectedMunicipality;
+    } else {
+        departmentName.value = '';
+    }
+}
 
 // Si el paciente ya tiene peso, convertirlo a 'lb' (si está en 'kg')
 onMounted(() => {
+    // Inicializar el campo de municipio y departamento con los datos existentes
+    if (form.municipality_id) {
+        updateDepartment();
+    }
+    
     if (form.vital_signs && form.vital_signs.weight) {
         // Convertir de kg a lb ya que la unidad predeterminada es 'lb'
         form.vital_signs.weight = (parseFloat(form.vital_signs.weight) * 2.20462).toFixed(2);
@@ -451,18 +519,58 @@ function submitForm() {
 
                     <!-- Paso 1: Dirección -->
                     <div v-if="currentStep === 1" class="space-y-6">
-                        <div>
-                            <InputLabel for="municipality_id" value="Municipio" />
-                            <SelectInput
-                                id="municipality_id"
-                                v-model="form.municipality_id"
-                                :options="municipalities"
-                                optionLabel="name"
-                                optionValue="id"
-                                placeholder="Seleccione un municipio"
-                                class="w-full mt-1"
-                            />
-                            <InputError :message="form.errors.municipality_id" class="mt-2" />
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <InputLabel for="municipality_search" value="Municipio" />
+                                <div class="relative">
+                                    <input
+                                        id="municipality_search"
+                                        type="text"
+                                        v-model="municipalitySearchQuery"
+                                        class="w-full mt-1 px-4 py-2 border rounded-md shadow-sm focus:ring-naturalbio-verde focus:border-naturalbio-verde"
+                                        placeholder="Buscar municipio..."
+                                        autocomplete="off"
+                                        @focus="showMunicipalityDropdown = true"
+                                        @blur="handleMunicipalityBlur"
+                                    />
+                                    
+                                    <!-- Icono de búsqueda -->
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    
+                                    <!-- Lista de resultados -->
+                                    <div v-if="showMunicipalityDropdown && filteredMunicipalities.length > 0" 
+                                         class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto">
+                                        <ul class="py-1">
+                                            <li 
+                                                v-for="municipality in filteredMunicipalities" 
+                                                :key="municipality.id"
+                                                @mousedown="selectMunicipality(municipality)"
+                                                class="px-3 py-2 cursor-pointer hover:bg-gray-100"
+                                            >
+                                                <div class="font-medium">{{ municipality.name }}</div>
+                                                <div class="text-sm text-gray-500">{{ municipality.department.name }}</div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <InputError :message="form.errors.municipality_id" class="mt-2" />
+                            </div>
+                            
+                            <div>
+                                <InputLabel for="department" value="Departamento" />
+                                <TextInput
+                                    id="department"
+                                    v-model="departmentName"
+                                    type="text"
+                                    class="w-full mt-1 bg-gray-100"
+                                    readonly
+                                    disabled
+                                />
+                            </div>
                         </div>
                         
                         <div>
@@ -880,6 +988,13 @@ function submitForm() {
                                 <div>
                                     <p class="font-semibold">Nombre completo:</p>
                                     <p>{{ form.name }} {{ form.last_name }}</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-semibold">Dirección:</p>
+                                    <p>{{ form.address || 'No proporcionada' }}</p>
+                                    <p>Municipio: {{ selectedMunicipalityObj?.name || props.municipalities.find(m => m.id === form.municipality_id)?.name || 'No seleccionado' }}</p>
+                                    <p>Departamento: {{ departmentName || 'No disponible' }}</p>
                                 </div>
                                 
                                 <div>
